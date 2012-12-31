@@ -1,9 +1,9 @@
 /*
 Bit Shadow Machine
-Copyright (c) 2012 Your name
-Your city, state zip, country
-Your email
-Your url
+Copyright (c) 2012 Vince Allen
+vince@vinceallen.com
+http://www.vinceallen.com
+https://github.com/foldi/Bit-Shadow-Machine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: December 30, 2012 07:13:41 */
+/* Build time: December 31, 2012 12:47:33 */
 
 
-html, body, .world {position: absolute;top: 0;left: 0;margin: 0;padding: 0;background-color: #000;-webkit-transform: translate3d(0, 0, 0);}
-#worldA {}
-#worldB {top: 120px;left: 340px;}
+html, body, .world {position: absolute;top: 0;left: 0;margin: 0;padding: 0;background-color: rgb(0, 0, 0);-webkit-transform: translate3d(0, 0, 0);-moz-transform: translate3d(0, 0, 0);-o-transform: translate3d(0, 0, 0);-ms-transform: translate3d(0, 0, 0);transform: translate3d(0, 0, 0);}
 

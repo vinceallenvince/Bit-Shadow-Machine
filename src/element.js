@@ -6,10 +6,10 @@
 function Element(opt_options) {
 
   this.options = opt_options || {};
-  this.name = 'element';
-  this.id = this.name + exports.System._getNewId();
+  this.options.name = 'element';
+  this.options.id = this.options.name + exports.System._getNewId();
 
-  this.blur = 0;
+  this.options.blur = 0;
 
   return this;
 }

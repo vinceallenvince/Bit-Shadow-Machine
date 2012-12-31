@@ -8,155 +8,27 @@
   <meta name='apple-mobile-web-app-capable' content='yes' />
   <title>Bit Shadow Machine</title>
   <link rel='stylesheet' href='css/bitshadowmachine.css' type='text/css' charset='utf-8' />
-  <script src='scripts/chromath.min.js' type='text/javascript' charset='utf-8'></script>
   <script src='scripts/bitshadowmachine.js' type='text/javascript' charset='utf-8'></script>
+  <script src='scripts/anim.js' type='text/javascript' charset='utf-8'></script>
 </head>
 <body>
-  <div id='worldA' class='world'></div>
-  <div id='worldB' class='world'></div>
   <script type="text/javascript">
 
-    var totalElements = 100;
-
-    var Anim = {}, exports = Anim;
-
-    (function(exports) {
-
-      exports.BitShadowMachine = {};
-      new BitShadowMachine(exports.BitShadowMachine, exports);
-
-      function Mover(options) {
-
-        var bsm = exports.BitShadowMachine, utils = exports.BitShadowMachine.Utils;
-
-        bsm.Element.call(this, options);
-
-        this.world = options.world;
-
-        this.id = options.id;
-        this.width = options.width || 1;
-        this.height = options.height || 1;
-        this.mass = options.mass || 1;
-        this.color = options.color || [0, 0, 0];
-        this.opacity = options.opacity || 1;
-
-        this.acceleration = utils.getDataType(options.acceleration) === 'function' ?
-            options.acceleration() : options.acceleration || new bsm.Vector();
-
-        this.velocity = utils.getDataType(options.velocity) === 'function' ?
-            options.velocity() : options.velocity || new bsm.Vector();
-
-        this.location = utils.getDataType(options.location) === 'function' ?
-            options.location() : options.location || new bsm.Vector();
-
-        this.maxSpeed = 16;
-        this.maxSteeringForce = 10;
-
-        this.blur = 0;
-
-        this.forceVector = new bsm.Vector();
-        this.name = 'element';
-
-        return this;
-      }
-      exports.BitShadowMachine.Utils.extend(Mover, exports.BitShadowMachine.Element);
-
-      Mover.prototype.step = function() {
-
-        var bsm = exports.BitShadowMachine, utils = exports.BitShadowMachine.Utils;
-
-        this.applyForce(this.world.gravity); // gravity
-
-        if (this.seekTarget) { // seek target
-          this.applyForce(this.seek(this.seekTarget));
-        }
-
-        this.velocity.add(this.acceleration); // add acceleration
-
-        if (this.maxSpeed) {
-          this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-        }
-
-        this.opacity = utils.map(this.velocity.mag(), 0, this.maxSpeed, 0.4, 1);
-
-        this.location.add(this.velocity); // add velocity
-
-        this.checkEdges();
-
-        this.acceleration.mult(0); // reset acceleration
-      };
-
-      Mover.prototype.applyForce = function(force) {
-        this.forceVector.x = force.x;
-        this.forceVector.y = force.y;
-        this.forceVector.div(this.mass);
-        this.acceleration.add(this.forceVector);
-      };
-
-      Mover.prototype.checkEdges = function() {
-
-        if (this.location.y - this.height/2 < 0) { // top
-          this.velocity.mult(-1);
-          this.location.y = this.height/2;
-        }
-
-        if (this.location.x + this.width/2 > this.world.width) { // right
-          this.velocity.mult(-1);
-          this.location.x = this.world.width - this.width/2;
-        }
-
-        if (this.location.y + this.height/2 > this.world.height) { // bottom
-          this.velocity.mult(-1);
-          this.location.y = this.world.height - this.height/2;
-        }
-
-        if (this.location.x - this.width/2 < 0) { // left
-          this.velocity.mult(-1);
-          this.location.x = this.width/2;
-        }
-
-      };
-
-      Mover.prototype.seek = function(target) {
-
-        var world = this.world,
-          desiredVelocity = bsm.Vector.VectorSub(target.location, this.location),
-          distanceToTarget = desiredVelocity.mag();
-
-        desiredVelocity.normalize();
-
-        if (distanceToTarget < world.width/2) {
-          var m = bsm.Utils.map(distanceToTarget, 0, world.width/2, 0, this.maxSpeed);
-          desiredVelocity.mult(m);
-        } else {
-          desiredVelocity.mult(this.maxSpeed);
-        }
-
-        desiredVelocity.sub(this.velocity);
-        desiredVelocity.limit(this.maxSteeringForce);
-
-        return desiredVelocity;
-      };
-
-      exports.Mover = Mover;
-
-    }(exports));
-
-    var bsm = Anim.BitShadowMachine;
+    var totalElements = 200,
+        bsm = Anim.BitShadowMachine;
 
     var system = new bsm.System.create(function() {
       for (var i = 0; i < totalElements; i++) {
-
-        var color = Chromath.hsl2rgb(bsm.Utils.map(i, 0, totalElements, 0, 180), 1, 0.5),
-            mass = bsm.Utils.map(i, 0, totalElements, 10, 360);
 
         bsm.System.add('Mover', {
           location: function() {
             return new bsm.Vector(bsm.Utils.getRandomNumber(0, this.world.width),
                 bsm.Utils.getRandomNumber(0, this.world.height));
           },
-          mass: mass,
-          color: [Math.floor(color[0]), Math.floor(color[1]), Math.floor(color[2])],
+          mass: bsm.Utils.map(i, 0, totalElements, 10, 100),
+          hue: bsm.Utils.map(i, 0, totalElements, 0, 180),
+          saturation: 1,
+          lightness: 0.5,
           opacity: 1,
           seekTarget: bsm.System.mouse
         });
@@ -164,10 +36,25 @@
     },
     {
       el: document.body,
-      resolution: 4
+      resolution: 4,
+      colorMode: 'hsla'
     });
 
-    document.addEventListener('mouseup', function() {
+    bsm.Utils.addEvent(document, 'mouseup', function() {
+      for (var record, i = 0, max = bsm.System._records.list.length; i < max; i++) {
+        record = bsm.System._records.list[i];
+        if (record.world) {
+          record.location.x = bsm.Utils.getRandomNumber(0, record.world.width);
+          record.location.y = bsm.Utils.getRandomNumber(0, record.world.height);
+        }
+      }
+    });
+
+    bsm.Utils.addEvent(document, 'touchstart', function(e) {
+      e.preventDefault();
+      var touch = e.changedTouches[0];
+      bsm.System.mouse.location.x = touch.pageX / bsm.System._records.list[0].resolution;
+      bsm.System.mouse.location.y = touch.pageY / bsm.System._records.list[0].resolution;
       for (var record, i = 0, max = Anim.BitShadowMachine.System._records.list.length; i < max; i++) {
         record = Anim.BitShadowMachine.System._records.list[i];
         if (record.world) {
@@ -175,55 +62,7 @@
           record.location.y = bsm.Utils.getRandomNumber(0, record.world.height);
         }
       }
-    }, false);
-
-    document.addEventListener('touchstart', function() {
-      for (var record, i = 0, max = Anim.BitShadowMachine.System._records.list.length; i < max; i++) {
-        record = Anim.BitShadowMachine.System._records.list[i];
-        if (record.world) {
-          record.location.x = bsm.Utils.getRandomNumber(0, record.world.width);
-          record.location.y = bsm.Utils.getRandomNumber(0, record.world.height);
-        }
-      }
-    }, false);
-
-    /*var system = new bsm.System.create(function() {
-      for (var i = 0; i < totalElements; i++) {
-        bsm.System.add('Mover', {
-          location: function() {
-            return new bsm.Vector(bsm.Utils.getRandomNumber(0, this.world.width), 0);
-          },
-          mass: bsm.Utils.getRandomNumber(1, 20, true),
-          color: [0, 0, 0],
-          opacity: 1,
-          world: document.getElementById('worldA')
-        });
-      }
-      for (var i = 0; i < totalElements; i++) {
-        bsm.System.add('Mover', {
-          location: function() {
-            return new bsm.Vector(bsm.Utils.getRandomNumber(0, this.world.width), 0);
-          },
-          mass: bsm.Utils.getRandomNumber(1, 20, true),
-          color: [0, 0, 0],
-          opacity: 1,
-          world: document.getElementById('worldB')
-        });
-      }
-    },
-    [
-      {
-        el: document.getElementById('worldA'),
-        width: 320,
-        height: 480,
-        resolution: 16
-      },
-      {
-        el: document.getElementById('worldB'),
-        width: 320,
-        height: 480
-      }
-    ]);*/
+    });
   </script>
 </body>
 </html>

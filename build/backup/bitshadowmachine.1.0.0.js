@@ -1,9 +1,9 @@
 /*
 Bit Shadow Machine
-Copyright (c) 2012 Your name
-Your city, state zip, country
-Your email
-Your url
+Copyright (c) 2012 Vince Allen
+vince@vinceallen.com
+http://www.vinceallen.com
+https://github.com/foldi/Bit-Shadow-Machine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: December 30, 2012 07:13:41 */
+/* Build time: December 31, 2012 12:47:33 */
 /** @namespace */
 function BitShadowMachine(exports, opt_parent) {
 
@@ -192,10 +192,10 @@ exports.Utils = Utils;
 function Element(opt_options) {
 
   this.options = opt_options || {};
-  this.name = 'element';
-  this.id = this.name + exports.System._getNewId();
+  this.options.name = 'element';
+  this.options.id = this.options.name + exports.System._getNewId();
 
-  this.blur = 0;
+  this.options.blur = 0;
 
   return this;
 }
@@ -534,6 +534,7 @@ System.mouse = {
 /**
  * Increments idCount and returns the value. Use when
  * generating a unique id.
+ * @private
  */
 System._getNewId = function() {
   this._idCount++;
@@ -542,6 +543,7 @@ System._getNewId = function() {
 
 /**
  * Returns the current id count.
+ * @private
  */
 System._getIdCount = function() {
   return this._idCount;
@@ -606,9 +608,11 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
   utils.addEvent(window, 'mousemove', function(e) {
     var resolution = me._records.list[0].resolution;
     if (e.pageX && e.pageY) {
-      me.mouse.location = new exports.Vector(e.pageX / resolution, e.pageY / resolution);
+      me.mouse.location.x = e.pageX / resolution;
+      me.mouse.location.y = e.pageY / resolution;
     } else if (e.clientX && e.clientY) {
-      me.mouse.location = new exports.Vector(e.clientX / resolution, e.clientY / resolution);
+      me.mouse.location.x = e.clientX / resolution;
+      me.mouse.location.y = e.clientY / resolution;
     }
   });
 
@@ -647,11 +651,15 @@ System._update = function() {
   // loop thru records and build box shadows
   for (i = records.length - 1; i >= 0; i -= 1) {
     record = records[i];
-    if (record.world) {
+    if (record.world && record.location && record.opacity) {
       shadows = buffers[record.world.id];
-      shadows = shadows + (record.location.x * record.world.resolution) + 'px ' + (record.location.y * record.world.resolution) +
-          'px ' + record.blur + 'px ' + record.world.resolution + 'px rgba(' + record.color[0] + ',' + record.color[1] + ',' + record.color[2] +
-          ',' + record.opacity + '),';
+      if (record.world.colorMode === 'rgba' && record.color) {
+        shadows = shadows + this._buildStringRGBA(record);
+      } else if (record.world.colorMode === 'hsla' && typeof record.hue !== undefined && typeof record.saturation !== undefined && typeof record.lightness !== undefined) {
+        shadows = shadows + this._buildStringHSLA(record);
+      } else {
+        throw new Error('System: current color mode not supported.');
+      }
       buffers[record.world.id] = shadows;
     }
   }
@@ -669,6 +677,44 @@ System._update = function() {
     });
   })(this);
   window.requestAnimFrame(update);
+};
+
+/**
+ * Builds an hsla box shadow string based on the passed
+ * object's properties.
+ * @private
+ */
+System._buildStringHSLA = function(obj) {
+
+    var resolution = obj.world.resolution,
+        loc = obj.location;
+
+    return (loc.x * resolution) + 'px ' + // left offset
+        (loc.y * resolution) + 'px ' + // right offset
+        obj.blur + 'px ' + // blur
+        resolution + 'px ' + // spread
+        obj.world.colorMode + // color mode
+        '(' + obj.hue + ',' + (obj.saturation * 100) + '%,' + (obj.lightness * 100) + '%,' + // color
+        obj.opacity + '),'; // opacity
+};
+
+/**
+ * Builds an rgba box shadow string based on the passed
+ * object's properties.
+ * @private
+ */
+System._buildStringRGBA = function(obj) {
+
+    var resolution = obj.world.resolution,
+        loc = obj.location;
+
+    return (loc.x * resolution) + 'px ' + // left offset
+        (loc.y * resolution) + 'px ' + // right offset
+        obj.blur + 'px ' + // blur
+        resolution + 'px ' + // spread
+        obj.world.colorMode + // color mode
+        '(' + obj.color[0] + ',' + obj.color[1] + ',' + obj.color[2] + ',' + // color
+        obj.opacity + '),'; // opacity
 };
 
 /**
@@ -726,15 +772,12 @@ System.add = function(klass, opt_options) {
   }
   // initialize the new object
   records[records.length - 1]._init();
-  // add the new object to records lookup table; value = parentNode of its DOM element
-  if (records[records.length - 1]._el) {
-    parentNode = records[records.length - 1]._el.parentNode;
-  }
-  recordsLookup[records[records.length - 1].id] = parentNode;
+  // add the new object to records lookup table
+  recordsLookup[records[records.length - 1].id] = true;
 };
 
 /**
- * Removes an element from the records array.
+ * Removes an element from the system.
  *
  * @param {Object} obj The element to remove.
  */
@@ -754,15 +797,20 @@ System.destroy = function (obj) {
 
 exports.System = System;
 /*global exports, document */
+/**
+ * Creates a new World.
+ * @constructor
+ */
 function World(opt_options) {
 
   var el, options = opt_options || {},
       windowSize = exports.Utils.getWindowSize();
 
-  this.gravity = options.gravity || new exports.Vector(0, 0.0);
+  this.gravity = options.gravity || new exports.Vector(0, 0.01);
   this.resolution = options.resolution || 8;
   this.width = options.width / this.resolution || windowSize.width / this.resolution;
   this.height = options.height / this.resolution || windowSize.height / this.resolution;
+  this.colorMode = options.colorMode || 'rgba';
 
   // if no element is passed, use document.body
   if (!options.el) {
@@ -780,8 +828,6 @@ function World(opt_options) {
    */
   this._pool = [];
 }
-
-World.prototype.step = function() {};
 
 exports.World = World;
 };

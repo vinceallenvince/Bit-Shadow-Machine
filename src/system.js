@@ -42,6 +42,7 @@ System.mouse = {
 /**
  * Increments idCount and returns the value. Use when
  * generating a unique id.
+ * @private
  */
 System._getNewId = function() {
   this._idCount++;
@@ -50,6 +51,7 @@ System._getNewId = function() {
 
 /**
  * Returns the current id count.
+ * @private
  */
 System._getIdCount = function() {
   return this._idCount;
@@ -114,9 +116,11 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
   utils.addEvent(window, 'mousemove', function(e) {
     var resolution = me._records.list[0].resolution;
     if (e.pageX && e.pageY) {
-      me.mouse.location = new exports.Vector(e.pageX / resolution, e.pageY / resolution);
+      me.mouse.location.x = e.pageX / resolution;
+      me.mouse.location.y = e.pageY / resolution;
     } else if (e.clientX && e.clientY) {
-      me.mouse.location = new exports.Vector(e.clientX / resolution, e.clientY / resolution);
+      me.mouse.location.x = e.clientX / resolution;
+      me.mouse.location.y = e.clientY / resolution;
     }
   });
 
@@ -155,11 +159,15 @@ System._update = function() {
   // loop thru records and build box shadows
   for (i = records.length - 1; i >= 0; i -= 1) {
     record = records[i];
-    if (record.world) {
+    if (record.world && record.location && record.opacity) {
       shadows = buffers[record.world.id];
-      shadows = shadows + (record.location.x * record.world.resolution) + 'px ' + (record.location.y * record.world.resolution) +
-          'px ' + record.blur + 'px ' + record.world.resolution + 'px rgba(' + record.color[0] + ',' + record.color[1] + ',' + record.color[2] +
-          ',' + record.opacity + '),';
+      if (record.world.colorMode === 'rgba' && record.color) {
+        shadows = shadows + this._buildStringRGBA(record);
+      } else if (record.world.colorMode === 'hsla' && typeof record.hue !== undefined && typeof record.saturation !== undefined && typeof record.lightness !== undefined) {
+        shadows = shadows + this._buildStringHSLA(record);
+      } else {
+        throw new Error('System: current color mode not supported.');
+      }
       buffers[record.world.id] = shadows;
     }
   }
@@ -177,6 +185,44 @@ System._update = function() {
     });
   })(this);
   window.requestAnimFrame(update);
+};
+
+/**
+ * Builds an hsla box shadow string based on the passed
+ * object's properties.
+ * @private
+ */
+System._buildStringHSLA = function(obj) {
+
+    var resolution = obj.world.resolution,
+        loc = obj.location;
+
+    return (loc.x * resolution) + 'px ' + // left offset
+        (loc.y * resolution) + 'px ' + // right offset
+        obj.blur + 'px ' + // blur
+        resolution + 'px ' + // spread
+        obj.world.colorMode + // color mode
+        '(' + obj.hue + ',' + (obj.saturation * 100) + '%,' + (obj.lightness * 100) + '%,' + // color
+        obj.opacity + '),'; // opacity
+};
+
+/**
+ * Builds an rgba box shadow string based on the passed
+ * object's properties.
+ * @private
+ */
+System._buildStringRGBA = function(obj) {
+
+    var resolution = obj.world.resolution,
+        loc = obj.location;
+
+    return (loc.x * resolution) + 'px ' + // left offset
+        (loc.y * resolution) + 'px ' + // right offset
+        obj.blur + 'px ' + // blur
+        resolution + 'px ' + // spread
+        obj.world.colorMode + // color mode
+        '(' + obj.color[0] + ',' + obj.color[1] + ',' + obj.color[2] + ',' + // color
+        obj.opacity + '),'; // opacity
 };
 
 /**
@@ -234,15 +280,12 @@ System.add = function(klass, opt_options) {
   }
   // initialize the new object
   records[records.length - 1]._init();
-  // add the new object to records lookup table; value = parentNode of its DOM element
-  if (records[records.length - 1]._el) {
-    parentNode = records[records.length - 1]._el.parentNode;
-  }
-  recordsLookup[records[records.length - 1].id] = parentNode;
+  // add the new object to records lookup table
+  recordsLookup[records[records.length - 1].id] = true;
 };
 
 /**
- * Removes an element from the records array.
+ * Removes an element from the system.
  *
  * @param {Object} obj The element to remove.
  */
