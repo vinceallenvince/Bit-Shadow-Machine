@@ -1,4 +1,4 @@
-# Box-Shadow Machine: a JavaScript framework for creating particle animations
+# Bit-Shadow Machine: a JavaScript framework for creating particle animations
 
 A Bit-Shadow Machine renders particles in a web browser using CSS box shadows. That's it. No HTML5 Canvas, WebGL or even a single DOM element.
 
