@@ -4,6 +4,8 @@ A Bit-Shadow Machine renders particles in a web browser using CSS box shadows. T
 
 By default, the box shadows are attached to your document's body. Freed from parsing the render tree, the browser can animate many more particles than with conventional methods. You should be able to easily render several hundred particles at 60 frames per second.
 
+View a demo at http://www.bitshadowmachine.com
+
 ## Create a Simple System
 
 Think of a Bit-Shadow Machine as a rendering engine. You supply the particles to animate. It takes care of drawing them on screen.
@@ -161,7 +163,7 @@ The following is taken from examples/simple.html.
 </html>
 ```
 
-You should see 200 blocks fall and bounce off the bottom of your browser.
+You should see 200 blocks fall and bounce off the bottom of your browser. http://www.bitshadowmachine.com/examples/
 
 ## Update your world
 
