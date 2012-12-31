@@ -16,7 +16,7 @@
 <body>
   <script type="text/javascript">
 
-    var Anim = {}, exports = Anim;
+    var SimpleAnim = {}, exports = SimpleAnim;
 
     (function(exports) {
 
@@ -130,7 +130,7 @@
     }(exports));
 
     var totalBlocks = 200,
-        bsm = Anim.BitShadowMachine;
+        bsm = SimpleAnim.BitShadowMachine;
 
     var system = new bsm.System.create(function() {
       for (var i = 0; i < totalBlocks; i++) {
