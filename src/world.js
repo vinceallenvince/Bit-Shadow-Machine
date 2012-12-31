@@ -24,6 +24,7 @@ function World(opt_options) {
   this.el = el;
   this.name = 'world';
   this.id = this.name + exports.System._getNewId();
+  this.pauseStep = false;
 
   /**
    * Object pool used to recycle objects.

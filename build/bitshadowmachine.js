@@ -23,8 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 1.0.0 */
-/* Build time: December 31, 2012 12:47:33 */
+/* Version: 1.0.1 */
+/* Build time: December 31, 2012 02:50:35 */
 /** @namespace */
 function BitShadowMachine(exports, opt_parent) {
 
@@ -172,15 +172,35 @@ Utils.addEvent = function(target, eventType, handler) {
   'use strict';
 
   if (target.addEventListener) { // W3C
-    this.addEventHandler = function(target, eventType, handler) {
+    this.addEvent = function(target, eventType, handler) {
       target.addEventListener(eventType, handler, false);
     };
   } else if (target.attachEvent) { // IE
-    this.addEventHandler = function(target, eventType, handler) {
+    this.addEvent = function(target, eventType, handler) {
       target.attachEvent("on" + eventType, handler);
     };
   }
-  this.addEventHandler(target, eventType, handler);
+  this.addEvent(target, eventType, handler);
+};
+
+/**
+ * Removes an event listener from a DOM element.
+ *
+ * @param {Object} target The element with the event listener.
+ * @param {string} eventType The event type.
+ * @param {function} The function to run when the event is triggered.
+ */
+Utils.removeEvent = function (target, eventType, handler) {
+  if (target.removeEventListener) { // W3C
+    this.removeEvent = function (target, eventType, handler) {
+      target.removeEventListener(eventType, handler, false);
+    };
+  } else if (target.detachEvent) { // IE
+    this.removeEvent = function (target, eventType, handler) {
+      target.detachEvent("on" + eventType, handler);
+    };
+  }
+  this.removeEvent(target, eventType, handler);
 };
 
 exports.Utils = Utils;
@@ -490,7 +510,7 @@ Vector.prototype.dot = function(vector) {
 };
 
 exports.Vector = Vector;
-/*global exports, window, parent */
+/*global exports, window, document, parent */
 /**
  * Creates a new System.
  * @constructor
@@ -532,6 +552,15 @@ System.mouse = {
 };
 
 /**
+ * Stores the time in milliseconds of the last
+ * resize event. Used to pause renderer during resize
+ * and resume when resize is complete.
+ *
+ * @private
+ */
+System._resizeTime = 0;
+
+/**
  * Increments idCount and returns the value. Use when
  * generating a unique id.
  * @private
@@ -553,7 +582,7 @@ System._getIdCount = function() {
  * Initializes the system.
  *
  * @param {Function} opt_setup A function to run before System's _update loop starts.
- * @param {Object|Array.<Object>} opt_worlds A single reference or an array of
+ * @param {Object|Array} opt_worlds A single reference or an array of
  *    references to DOM elements representing System worlds. If no value is supplied,
  *    the System will use document.body.
  * @param {boolean} opt_noStart If true, _update is not called. Use to setup a System
@@ -567,6 +596,10 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
       noStart = opt_noStart, utils = exports.Utils,
       worldsCache = System._worldsCache.list,
       worldsCacheBuffer = System._worldsCache.buffers;
+
+  System._setup = setup;
+  System._worlds = worlds;
+  System._noStart = opt_noStart;
 
   // if no world element is passed, new World will use document.body.
   if (!worlds) {
@@ -591,8 +624,8 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
   }
 
   // run the initial setup function
-  if (utils.getDataType(setup) === 'function') {
-    setup.call(this);
+  if (utils.getDataType(System._setup) === 'function') {
+    System._setup.call(this);
   }
 
   // if system is meant to start immediately, start it.
@@ -606,20 +639,127 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
 
   // save the current and last mouse position
   utils.addEvent(window, 'mousemove', function(e) {
-    var resolution = me._records.list[0].resolution;
-    if (e.pageX && e.pageY) {
-      me.mouse.location.x = e.pageX / resolution;
-      me.mouse.location.y = e.pageY / resolution;
-    } else if (e.clientX && e.clientY) {
-      me.mouse.location.x = e.clientX / resolution;
-      me.mouse.location.y = e.clientY / resolution;
-    }
+    System._recordMouseLoc.call(System, e);
   });
 
   // listen for window resize
-  /*exports.Utils.addEvent(window, 'resize', function(e) {
+  utils.addEvent(window, 'resize', function(e) {
     System._resize.call(System, e);
-  });*/
+  });
+
+  // listen for keyup
+  utils.addEvent(document, 'keyup', function(e) {
+    System._keyup.call(System, e);
+  });
+
+};
+
+/**
+ * Resets and starts the System.
+ * @private
+ */
+System.reset = function() {
+
+  var utils = exports.Utils;
+
+  this._records = {
+    lookup: {},
+    list: []
+  };
+
+  this._worldsCache = {
+    list: [],
+    buffers: {}
+  };
+
+  this._idCount = 0;
+
+  this.mouse = {
+    location: new exports.Vector()
+  };
+
+  this._resizeTime = 0;
+
+  // TODO: remove events
+
+  this.create(this._setup, this._worlds, this._noStart);
+};
+
+/**
+ * Saves the mouse location relative to the browser window.
+ * @private
+ */
+System._recordMouseLoc = function (e) {
+
+  var resolution = this._records.list[0].resolution;
+
+  if (e.pageX && e.pageY) {
+    this.mouse.location.x = e.pageX / resolution;
+    this.mouse.location.y = e.pageY / resolution;
+  } else if (e.clientX && e.clientY) {
+    this.mouse.location.x = e.clientX / resolution;
+    this.mouse.location.y = e.clientY / resolution;
+  }
+};
+
+/**
+ * Executes functions based on the keyup event's keycode.
+ * @private
+ */
+System._keyup = function(e) {
+
+  var i, max, worlds = this.allWorlds(),
+      records = this.allElements;
+
+  if (e.keyCode === 80) { // 'p'; pause
+    for (i = 0, max = worlds.length; i < max; i++) {
+      worlds[i].pauseStep = !worlds[i].pauseStep;
+    }
+  }
+};
+
+/**
+ * Called from a window resize event, resize() repositions all elements relative
+ * to the new window size.
+ * @private
+ */
+System._resize = function(e) {
+
+  var i, max, loc, records = this._records.list, record, world,
+      screenDimensions = exports.Utils.getWindowSize(),
+      windowWidth = screenDimensions.width,
+      windowHeight = screenDimensions.height,
+      worldsCache = this._worldsCache.list;
+
+  // set _resizeTime; checked in _update for resize stop
+  this._resizeTime = new Date().getTime();
+
+  // set pauseStep for all worlds
+  for (i = 0, max = worldsCache.length; i < max; i += 1) {
+    worldsCache[i].pauseStep = true;
+  }
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+
+    record = records[i];
+
+    if (record.name !== 'world') {
+
+      loc = record.location;
+      world = record.world;
+
+      if (loc) {
+        loc.x = (windowWidth * (loc.x / world.width)) / world.resolution;
+        loc.y = (windowHeight * (loc.y / world.height)) / world.resolution;
+      }
+    }
+  }
+
+  // reset the bounds of all worlds
+  for (i = 0, max = worldsCache.length; i < max; i += 1) {
+    worldsCache[i].width = windowWidth / worldsCache[i].resolution;
+    worldsCache[i].height = windowHeight / worldsCache[i].resolution;
+  }
 };
 
 /**
@@ -629,11 +769,19 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
  */
 System._update = function() {
 
-  var i, update,
+  var i, max, update,
       records = this._records.list, record,
       worlds = this._worldsCache.list,
       buffers = this._worldsCache.buffers, buffer,
       shadows = '';
+
+  // check for resize stop
+  if (this._resizeTime && new Date().getTime() - this._resizeTime > 100) {
+    this._resizeTime = 0;
+    for (i = 0, max = worlds.length; i < max; i += 1) {
+      worlds[i].pauseStep = false;
+    }
+  }
 
   // loop thru and reset buffers
   for (i = worlds.length - 1; i >= 0; i -= 1) {
@@ -643,7 +791,7 @@ System._update = function() {
   // loop thru and step records
   for (i = records.length - 1; i >= 0; i -= 1) {
     record = records[i];
-    if (record.step) {
+    if (record.step && !record.world.pauseStep) {
       record.step();
     }
   }
@@ -722,9 +870,9 @@ System._buildStringRGBA = function(obj) {
  * passed as a DOM element.
  *
  * @param {Object} world A DOM element representing a world.
- * @private
+ * @returns {Object} If found, returns a world. If not found returns null.
  */
-System._getWorld = function(world) {
+System.getWorld = function(world) {
   var records = this._records.list;
   for (var i = 0, max = records.length; i < max; i++) {
     if (records[i].el === world) {
@@ -732,6 +880,15 @@ System._getWorld = function(world) {
     }
   }
   return null;
+};
+
+/**
+ * Returns all worlds in the System.
+ *
+ * @returns {Array} A list of all worlds in the System.
+ */
+System.allWorlds = function () {
+  return this._worldsCache.list;
 };
 
 /**
@@ -748,7 +905,7 @@ System.add = function(klass, opt_options) {
     options.world = records[0];
   } else {
     // if a world was passed, find its reference in _records
-    options.world = System._getWorld(options.world);
+    options.world = System.getWorld(options.world);
   }
 
   // recycle object if one is available
@@ -794,6 +951,14 @@ System.destroy = function (obj) {
   }
 };
 
+/**
+ * Returns all elements in the System.
+ *
+ * @returns {Array} A list of all elements in the System.
+ */
+System.allElements = function () {
+  return this._records.list;
+};
 
 exports.System = System;
 /*global exports, document */
@@ -822,6 +987,7 @@ function World(opt_options) {
   this.el = el;
   this.name = 'world';
   this.id = this.name + exports.System._getNewId();
+  this.pauseStep = false;
 
   /**
    * Object pool used to recycle objects.

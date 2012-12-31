@@ -115,15 +115,35 @@ Utils.addEvent = function(target, eventType, handler) {
   'use strict';
 
   if (target.addEventListener) { // W3C
-    this.addEventHandler = function(target, eventType, handler) {
+    this.addEvent = function(target, eventType, handler) {
       target.addEventListener(eventType, handler, false);
     };
   } else if (target.attachEvent) { // IE
-    this.addEventHandler = function(target, eventType, handler) {
+    this.addEvent = function(target, eventType, handler) {
       target.attachEvent("on" + eventType, handler);
     };
   }
-  this.addEventHandler(target, eventType, handler);
+  this.addEvent(target, eventType, handler);
+};
+
+/**
+ * Removes an event listener from a DOM element.
+ *
+ * @param {Object} target The element with the event listener.
+ * @param {string} eventType The event type.
+ * @param {function} The function to run when the event is triggered.
+ */
+Utils.removeEvent = function (target, eventType, handler) {
+  if (target.removeEventListener) { // W3C
+    this.removeEvent = function (target, eventType, handler) {
+      target.removeEventListener(eventType, handler, false);
+    };
+  } else if (target.detachEvent) { // IE
+    this.removeEvent = function (target, eventType, handler) {
+      target.detachEvent("on" + eventType, handler);
+    };
+  }
+  this.removeEvent(target, eventType, handler);
 };
 
 exports.Utils = Utils;

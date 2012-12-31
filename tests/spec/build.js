@@ -55,11 +55,11 @@ describe("System", function() {
     expect(sys._records.list[0]._pool.length).toEqual(1);
   });
 
-  it("_getWorld() should iterate over _records.list and finds the passed world.", function() {
+  it("getWorld() should iterate over _records.list and finds the passed world.", function() {
     var system = new Anim.BitShadowMachine.System.create(function() {
        Anim.BitShadowMachine.System.add('Element');
     });
-    expect(typeof sys._getWorld(document.body)).toEqual("object");
+    expect(typeof sys.getWorld(document.body)).toEqual("object");
   });
 
   it("_buildStringHSLA() should build an hsla box shadow string based on the passed object's properties.", function() {
