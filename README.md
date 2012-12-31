@@ -163,7 +163,7 @@ The following is taken from examples/simple.html.
 
 You should see 200 blocks fall and bounce off the bottom of your browser.
 
-## Change the resolution
+## Update your world
 
 Currently, all particles in the Bit-Shadow Machine are the same size. By default, the resolution is 8px X 8px. To change the resolution, pass in a new resolution when creating a new system.
 
@@ -187,7 +187,12 @@ var system = new bsm.System.create(function() {
   resolution: 4
 });
 
-You should see 4px X 4px blocks. You can change the gravity, and colorMode via the same method.
-
 ```
+You should see 4px X 4px blocks. You can change your world's gravity, and colorMode via the same method.
+
+## What now?
+
+Because a Bit-Shadow Machine is strictly a rendering engine, it's up to you to create your own particle systems. You can build off the example above or check out the anim.js file in the /dev/scripts/ folder.
+
+Also, because a Bit-Shadow Machine depends on CSS box shadows, your browser must support them. But all modern browsers support the box-shadow rule except IE8 and below.
 
