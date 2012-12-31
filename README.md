@@ -169,7 +169,7 @@ Currently, all particles in the Bit-Shadow Machine are the same size. By default
 
 Replace the System.create() call above with this:
 
-```html
+```javascript
 
 var system = new bsm.System.create(function() {
   for (var i = 0; i < totalBlocks; i++) {
