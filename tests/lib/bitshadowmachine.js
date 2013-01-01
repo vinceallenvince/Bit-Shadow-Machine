@@ -23,8 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 1.0.1 */
-/* Build time: December 31, 2012 02:50:35 */
+/* Version: 1.0.2 */
+/* Build time: December 31, 2012 04:13:19 */
 /** @namespace */
 function BitShadowMachine(exports, opt_parent) {
 
