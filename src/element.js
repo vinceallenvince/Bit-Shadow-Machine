@@ -10,6 +10,7 @@ function Element(opt_options) {
   this.options.id = this.options.name + exports.System._getNewId();
 
   this.options.blur = 0;
+  this.options.scale = 1;
 
   return this;
 }

@@ -61,7 +61,9 @@ var Anim = {}, exports = Anim;
    */
   Mover.prototype.step = function() {
 
-    var bsm = exports.BitShadowMachine, utils = exports.BitShadowMachine.Utils;
+    var bsm = exports.BitShadowMachine,
+        utils = exports.BitShadowMachine.Utils,
+        velMag = this.velocity.mag();
 
     this.applyForce(this.world.gravity); // gravity
 
@@ -81,7 +83,8 @@ var Anim = {}, exports = Anim;
 
     this.lightness = utils.map(this.location.distance(this.seekTarget.location),
         0, this.world.width, 0.85, 0);
-    this.opacity = utils.map(this.velocity.mag(), 0, this.maxSpeed, 1, 0);
+    this.opacity = utils.map(velMag, 0, this.maxSpeed, 1, 0);
+    this.scale = utils.map(velMag, 0, this.maxSpeed, 1.1, 0);
 
     this.location.add(this.velocity); // add velocity
 

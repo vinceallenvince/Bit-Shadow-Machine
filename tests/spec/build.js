@@ -76,6 +76,7 @@ describe("System", function() {
         y: 16
       },
       blur: 0,
+      scale: 1,
       hue: 1,
       saturation: 1,
       lightness: 0.5,
@@ -98,6 +99,7 @@ describe("System", function() {
         y: 16
       },
       blur: 0,
+      scale: 1,
       color: [200, 200, 200],
       opacity: 0.75
     };
@@ -129,6 +131,7 @@ describe("Element", function() {
        Anim.BitShadowMachine.System.add('Element');
     });
     expect(sys._records.list[1].blur).toEqual(0);
+    expect(sys._records.list[1].scale).toEqual(1);
     expect(sys._records.list[1].id).toEqual('element2');
     expect(sys._records.list[1].name).toEqual('element');
     expect(typeof sys._records.list[1].world).toEqual('object');

@@ -117,33 +117,33 @@ System.create = function(opt_setup, opt_worlds, opt_noStart) {
   }
 
   // if system is meant to start immediately, start it.
-  if (!noStart) {
+  if (!noStart && !System._started) {
+    System._started = true; // set System._started so we only call raf once
     System._update();
+
+    // center the initial mouse loc
+    System.mouse.location = new exports.Vector((utils.getWindowSize().width / 2) / System._records.list[0].resolution,
+        (utils.getWindowSize().height / 2) / System._records.list[0].resolution);
+
+    // save the current and last mouse position
+    utils.addEvent(window, 'mousemove', function(e) {
+      System._recordMouseLoc.call(System, e);
+    });
+
+    // listen for window resize
+    utils.addEvent(window, 'resize', function(e) {
+      System._resize.call(System, e);
+    });
+
+    // listen for keyup
+    utils.addEvent(document, 'keyup', function(e) {
+      System._keyup.call(System, e);
+    });
   }
-
-  // center the initial mouse loc
-  System.mouse.location = new exports.Vector((utils.getWindowSize().width / 2) / System._records.list[0].resolution,
-      (utils.getWindowSize().height / 2) / System._records.list[0].resolution);
-
-  // save the current and last mouse position
-  utils.addEvent(window, 'mousemove', function(e) {
-    System._recordMouseLoc.call(System, e);
-  });
-
-  // listen for window resize
-  utils.addEvent(window, 'resize', function(e) {
-    System._resize.call(System, e);
-  });
-
-  // listen for keyup
-  utils.addEvent(document, 'keyup', function(e) {
-    System._keyup.call(System, e);
-  });
-
 };
 
 /**
- * Resets and starts the System.
+ * Resets System properties and calls create().
  * @private
  */
 System.reset = function() {
@@ -167,8 +167,6 @@ System.reset = function() {
   };
 
   this._resizeTime = 0;
-
-  // TODO: remove events
 
   this.create(this._setup, this._worlds, this._noStart);
 };
@@ -203,6 +201,8 @@ System._keyup = function(e) {
     for (i = 0, max = worlds.length; i < max; i++) {
       worlds[i].pauseStep = !worlds[i].pauseStep;
     }
+  } else if (e.keyCode === 82) { // 'r'; reset
+    this.reset();
   }
 };
 
@@ -328,7 +328,7 @@ System._buildStringHSLA = function(obj) {
     return (loc.x * resolution) + 'px ' + // left offset
         (loc.y * resolution) + 'px ' + // right offset
         obj.blur + 'px ' + // blur
-        resolution + 'px ' + // spread
+        (resolution * obj.scale) + 'px ' + // spread
         obj.world.colorMode + // color mode
         '(' + obj.hue + ',' + (obj.saturation * 100) + '%,' + (obj.lightness * 100) + '%,' + // color
         obj.opacity + '),'; // opacity
@@ -347,7 +347,7 @@ System._buildStringRGBA = function(obj) {
     return (loc.x * resolution) + 'px ' + // left offset
         (loc.y * resolution) + 'px ' + // right offset
         obj.blur + 'px ' + // blur
-        resolution + 'px ' + // spread
+        (resolution * obj.scale) + 'px ' + // spread
         obj.world.colorMode + // color mode
         '(' + obj.color[0] + ',' + obj.color[1] + ',' + obj.color[2] + ',' + // color
         obj.opacity + '),'; // opacity
