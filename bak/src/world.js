@@ -3,7 +3,7 @@
  * Creates a new World.
  * @constructor
  */
-function World(opt_el, opt_options) {
+function World(opt_options) {
 
   var el, options = opt_options || {},
       windowSize = exports.Utils.getWindowSize();
@@ -15,27 +15,21 @@ function World(opt_el, opt_options) {
   this.colorMode = options.colorMode || 'rgba';
 
   // if no element is passed, use document.body
-  if (!opt_el) {
+  if (!options.el) {
     el = document.body;
   } else {
-    el = opt_el;
+    el = options.el;
   }
 
   this.el = el;
-  this.name = 'World';
-  this.el.className = this.name.toLowerCase();
-  this.id = this.name + exports.System.getNewId();
+  this.name = 'world';
+  this.id = this.name + exports.System._getNewId();
   this.pauseStep = false;
 
   /**
    * Object pool used to recycle objects.
    */
   this._pool = [];
-
-  /**
-   * Worlds do not have worlds. However, assigning an
-   * object literal makes for less conditions in the
-   * update loop.
-   */
-  this.world = {};
 }
+
+exports.World = World;

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="Bit-Shadow-Machine" />
+  <meta name="description" content="Bit-Shadow Machine renders particles in a web browser using CSS box shadows." />
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <title>Bit-Shadow-Machine</title>
+  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/SimplexNoise.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Walker.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var totalItems = 400;
+      var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
+      var palette = new BitShadowMachine.ColorPalette();
+      palette.addColor({
+        min: 12,
+        max: 24,
+        startColor: [196, 213, 86],
+        endColor: [166, 183, 56]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [56, 139, 126],
+        endColor: [26, 109, 96]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [104, 233, 212],
+        endColor: [74, 203, 182]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [233, 158, 104],
+        endColor: [203, 128, 74]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [191, 75, 49],
+        endColor: [171, 55, 19]
+      });
+
+      var klasses = {
+        Walker: Walker
+      };
+
+      /**
+       * Tell BitShadowMachine where to find classes.
+       */
+      BitShadowMachine.Classes = klasses;
+
+      var world = new BitShadowMachine.World(document.getElementById('worldA'), {
+        width: 800,
+        height: 600,
+        color: [255, 255, 255],
+        resolution: 4
+      });
+
+      /**
+       * Create a new BitShadowMachine system.
+       */
+      BitShadowMachine.System.init(function() {
+
+        for (var i = 0; i < totalItems; i++) {
+
+          var location = new BitShadowMachine.Vector(BitShadowMachine.System.firstWorld().width / 2,
+              BitShadowMachine.System.firstWorld().height / 2);
+          var offset = new BitShadowMachine.Vector(1, 1);
+          offset.normalize();
+          offset.rotate(getRandomNumber(0, 360));
+          offset.mult(getRandomNumber(10, BitShadowMachine.System.firstWorld().width/2));
+          location.add(offset);
+
+          var size = getRandomNumber(10, 20);
+
+          this.add('Walker', {
+            location: location,
+            blur: 0,
+            scale: 1,
+            color: palette.getColor(),
+            opacity: getRandomNumber(0, 1, true),
+            remainsOnScreen: true
+          });
+        }
+      }, world);
+    </script>
+  </body>
+</html>

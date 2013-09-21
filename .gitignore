@@ -1,3 +1,7 @@
-bak/
-docs/
-public/
+#### FOLDERS ####
+node_modules
+reports
+
+#### FILES ####
+*.DS_Store
+*.swp
