@@ -15,7 +15,7 @@
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var totalItems = 600;
+      var totalItems = 800;
       var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
       var palette = new BitShadowMachine.ColorPalette();
       palette.addColor({
@@ -54,8 +54,11 @@
        */
       BitShadowMachine.Classes = klasses;
 
-      var world = new BitShadowMachine.World(document.getElementById('worldA'), {
-        resolution: 2
+      var worldA = new BitShadowMachine.World(document.getElementById('worldA'), {
+        width: 640,
+        height: 480,
+        resolution: 4,
+        backgroundColor: [0, 0, 0]
       });
 
       /**
@@ -65,12 +68,12 @@
 
         for (var i = 0; i < totalItems; i++) {
 
-          var location = new BitShadowMachine.Vector(BitShadowMachine.System.firstWorld().width / 2,
-              BitShadowMachine.System.firstWorld().height / 2);
+          var location = new BitShadowMachine.Vector(worldA.width / 2, worldA.height / 2);
+
           var offset = new BitShadowMachine.Vector(1, 1);
           offset.normalize();
           offset.rotate(getRandomNumber(0, 360));
-          offset.mult(getRandomNumber(10, BitShadowMachine.System.firstWorld().width/2));
+          offset.mult(getRandomNumber(10, worldA.width / 3));
           location.add(offset);
 
           var size = getRandomNumber(10, 20);
@@ -80,10 +83,10 @@
             blur: 0,
             scale: 1,
             color: palette.getColor(),
-            opacity: getRandomNumber(0, 1, true)
+            opacity: getRandomNumber(1, 1, true)
           });
         }
-      }, world);
+      }, worldA);
     </script>
   </body>
 </html>

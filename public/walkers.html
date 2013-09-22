@@ -14,9 +14,13 @@
   </head>
   <body>
     <div id='worldA'></div>
+    <div id='worldB'></div>
+    <div id='worldC'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var totalItems = 400;
+      var totalItemsA = 20;
+      var totalItemsB = 40;
+      var totalItemsC = 10;
       var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
       var palette = new BitShadowMachine.ColorPalette();
       palette.addColor({
@@ -55,40 +59,103 @@
        */
       BitShadowMachine.Classes = klasses;
 
-      var world = new BitShadowMachine.World(document.getElementById('worldA'), {
+      var worldA = new BitShadowMachine.World(document.getElementById('worldA'), {
         width: 800,
         height: 600,
-        color: [255, 255, 255],
-        resolution: 4
+        resolution: 2,
+        backgroundColor: [0, 0, 0]
       });
+
+      var worldB = new BitShadowMachine.World(document.getElementById('worldB'), {
+        width: 800,
+        height: 600,
+        resolution: 4,
+        noMenu: true
+      });
+
+      var worldC = new BitShadowMachine.World(document.getElementById('worldC'), {
+        width: 800,
+        height: 600,
+        resolution: 16,
+        noMenu: true
+      });
+
+      var worlds = [worldA, worldB, worldC];
 
       /**
        * Create a new BitShadowMachine system.
        */
       BitShadowMachine.System.init(function() {
 
-        for (var i = 0; i < totalItems; i++) {
+        for (var i = 0; i < totalItemsA; i++) {
 
-          var location = new BitShadowMachine.Vector(BitShadowMachine.System.firstWorld().width / 2,
-              BitShadowMachine.System.firstWorld().height / 2);
+          var location = new BitShadowMachine.Vector(worldA.width / 2,
+              worldA.height / 2);
           var offset = new BitShadowMachine.Vector(1, 1);
           offset.normalize();
           offset.rotate(getRandomNumber(0, 360));
-          offset.mult(getRandomNumber(10, BitShadowMachine.System.firstWorld().width/2));
+          offset.mult(getRandomNumber(10, worldA.width / 2));
           location.add(offset);
 
-          var size = getRandomNumber(10, 20);
+          var walker = this.add('Walker', {
+            location: location,
+            blur: 2,
+            scale: 1,
+            color: palette.getColor(),
+            opacity: getRandomNumber(0.1, 0.5, true),
+            remainsOnScreen: false,
+            perlinSpeed: 0.0001,
+            perlinAccelLow: -0.1,
+            perlinAccelHigh: 0.1
+          }, worldA);
+        }
 
-          this.add('Walker', {
+        for (var i = 0; i < totalItemsB; i++) {
+
+          var location = new BitShadowMachine.Vector(worldB.width / 2,
+              worldB.height / 2);
+          var offset = new BitShadowMachine.Vector(1, 1);
+          offset.normalize();
+          offset.rotate(getRandomNumber(0, 360));
+          offset.mult(getRandomNumber(10, worldB.width / 2));
+          location.add(offset);
+
+          var walker = this.add('Walker', {
             location: location,
             blur: 0,
             scale: 1,
             color: palette.getColor(),
-            opacity: getRandomNumber(0, 1, true),
-            remainsOnScreen: true
-          });
+            opacity: getRandomNumber(0.8, 0.9, true),
+            remainsOnScreen: false,
+            perlinSpeed: 0.0001,
+            perlinAccelLow: -0.2,
+            perlinAccelHigh: 0.2
+          }, worldB);
         }
-      }, world);
+
+        for (var i = 0; i < totalItemsC; i++) {
+
+          var location = new BitShadowMachine.Vector(worldC.width / 2,
+              worldC.height / 2);
+          var offset = new BitShadowMachine.Vector(1, 1);
+          offset.normalize();
+          offset.rotate(getRandomNumber(0, 360));
+          offset.mult(getRandomNumber(10, worldC.width / 2));
+          location.add(offset);
+
+          var walker = this.add('Walker', {
+            location: location,
+            blur: 8,
+            scale: 1,
+            color: palette.getColor(),
+            opacity: getRandomNumber(0.1, 0.2, true),
+            remainsOnScreen: false,
+            perlinSpeed: 0.0001,
+            perlinAccelLow: -0.4,
+            perlinAccelHigh: 0.4
+          }, worldC);
+        }
+      }, worlds);
     </script>
   </body>
 </html>

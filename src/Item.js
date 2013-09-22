@@ -15,7 +15,6 @@ function Item(opt_options) {
 
   this.name = options.name || 'Item';
   this.id = this.name + exports.System.getNewId();
-  this._force = new exports.Vector();
   this.blur = null;
   this.scale = null;
 }
@@ -42,7 +41,7 @@ Item.prototype.reset = function(opt_options) {
   }
 
   this.blur = options.blur || 0;
-  this.scale = options.scale || 1;
-  this.opacity = options.opacity || 1;
+  this.scale = typeof options.scale === 'undefined' ? 1 : options.scale;
+  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
   this.color = options.color || [0, 0, 0];
 };

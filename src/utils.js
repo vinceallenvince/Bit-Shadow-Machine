@@ -52,6 +52,21 @@ Utils.extend = function(subClass, superClass) {
   subClass.prototype.constructor = subClass;
 };
 
+ /**
+ * Returns a new object with all properties and methods of the
+ * old object copied to the new object's prototype.
+ *
+ * @function clone
+ * @memberof Utils
+ * @param {Object} object The object to clone.
+ * @returns {Object} An object.
+ */
+Utils.clone = function(object) {
+  function F() {}
+  F.prototype = object;
+  return new F;
+};
+
 /**
  * Determines the size of the browser window.
  *
@@ -90,7 +105,7 @@ Utils.getWindowSize = function() {
  * @param {string} eventType The event type.
  * @param {function} The function to run when the event is triggered.
  */
-Utils._addEvent = function(target, eventType, handler) {
+Utils.addEvent = function(target, eventType, handler) {
   if (target.addEventListener) { // W3C
     target.addEventListener(eventType, handler, false);
   } else if (target.attachEvent) { // IE

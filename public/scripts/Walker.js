@@ -51,21 +51,24 @@ Walker.prototype.init = function(opt_options) {
   this.offsetY = typeof options.offsetY === 'undefined' ? Math.random() * 10000 : options.offsetY;
   this.random = !!options.random;
   this.randomRadius = typeof options.randomRadius === 'undefined' ? 100 : options.randomRadius;
-  this.color = options.color || [255, 150, 50];
   this.avoidWorldEdges = !!options.avoidWorldEdges;
   this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
       50 : options.avoidWorldEdgesStrength;
 
-  this.acceleration = options.acceleration || new exports.Vector();
-  this.velocity = options.velocity || new exports.Vector();
-  this.location = options.location || new exports.Vector(this.world.width / 2, this.world.height / 2);
+  //
+
+  this.acceleration = options.acceleration || new BitShadowMachine.Vector();
+  this.velocity = options.velocity || new BitShadowMachine.Vector();
+  this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
   this.mass = options.mass || 10;
+  this._force = new BitShadowMachine.Vector();
 
   this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
   this.minSpeed = options.minSpeed || 0;
   this.bounciness = options.bounciness || 1;
 
   this.checkWorldEdges = typeof options.checkWorldEdges === 'undefined' ? true : options.checkWorldEdges;
+  this.wrapWorldEdges = true;
   this.life = options.life || 0;
   this.lifespan = typeof options.lifespan === 'undefined' ? -1 : options.lifespan;
 };
@@ -75,7 +78,6 @@ Walker.prototype.init = function(opt_options) {
  */
 Walker.prototype.step = function() {
   if (!this.isStatic) {
-    //this.applyForce(this.world.gravity);
     if (this.applyForces) { // !! rename this
       this.applyForces();
     }
@@ -118,28 +120,89 @@ Walker.prototype.applyForce = function(force) {
  */
 Walker.prototype._checkWorldEdges = function() {
 
-  if (this.location.y < 0) { // top
-    this.velocity.mult(-this.bounciness);
-    this.location.y = 0;
-    return;
-  }
+  var x, y, worldRight = this.world.width,
+      worldBottom = this.world.height,
+      worldBounds = this.worldBounds,
+      location = this.location,
+      velocity = this.velocity,
+      width = this.width,
+      height = this.height,
+      bounciness = this.bounciness;
 
-  if (this.location.x > this.world.width) { // right
-    this.velocity.mult(-this.bounciness);
-    this.location.x = this.world.width;
-    return;
-  }
+  // transform origin is at the center of the object
+  if (this.wrapWorldEdgesSoft) {
 
-  if (this.location.y > this.world.height) { // bottom
-    this.velocity.mult(-this.bounciness);
-    this.location.y = this.world.height;
-    return;
-  }
+    x = location.x;
+    y = location.y;
 
-  if (this.location.x < 0) { // left
-    this.velocity.mult(-this.bounciness);
-    this.location.x = 0;
-    return;
+    if (location.x > worldRight) {
+      location.x = -(worldRight - location.x);
+      if (this.controlCamera) {
+        this.world.location.x = this.world.location.x + x - location.x;
+      }
+    } else if (location.x < 0) {
+      location.x = worldRight + location.x;
+      if (this.controlCamera) {
+        this.world.location.x = this.world.location.x + x - location.x;
+      }
+    }
+
+    if (location.y > worldBottom) {
+      location.y = -(worldBottom - location.y);
+      if (this.controlCamera) {
+        this.world.location.y = this.world.location.y + y - location.y;
+      }
+    } else if (location.y < 0) {
+      location.y = worldBottom + location.y;
+      if (this.controlCamera) {
+        this.world.location.y = this.world.location.y + y - location.y;
+      }
+    }
+  } else if (this.wrapWorldEdges) {
+
+    x = location.x;
+    y = location.y;
+
+    if (location.x > worldRight) {
+      location.x = 0;
+      if (this.controlCamera) {
+        this.world.location.x = this.world.location.x + x - location.x;
+      }
+    } else if (location.x < 0) {
+      location.x = worldRight;
+      if (this.controlCamera) {
+        this.world.location.x = this.world.location.x + x - location.x;
+      }
+    }
+
+    if (location.y > worldBottom) {
+      location.y = 0;
+      if (this.controlCamera) {
+        this.world.location.y = this.world.location.y + y - location.y;
+      }
+    } else if (location.y < 0) {
+      location.y = worldBottom;
+      if (this.controlCamera) {
+        this.world.location.y = this.world.location.y + y - location.y;
+      }
+    }
+  } else {
+
+    if (location.x + width / 2 > worldRight) {
+      location.x = worldRight - width / 2;
+      velocity.x *= -1 * bounciness;
+    } else if (location.x < width / 2) {
+      location.x = width / 2;
+      velocity.x *= -1 * bounciness;
+    }
+
+    if (location.y + height / 2 > worldBottom) {
+      location.y = worldBottom - height / 2;
+      velocity.y *= -1 * bounciness;
+    } else if (location.y < height / 2) {
+      location.y = height / 2;
+      velocity.y *= -1 * bounciness;
+    }
   }
 };
 
@@ -156,14 +219,15 @@ Walker.prototype.applyForces = function() {
 
     this.perlinTime += this.perlinSpeed;
 
+    this.acceleration.mult(0);
+    this.velocity.mult(0);
+
     if (this.remainsOnScreen) {
-      this.acceleration = new BitShadowMachine.Vector();
-      this.velocity = new BitShadowMachine.Vector();
       this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, this.world.width);
       this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, this.world.height);
     } else {
-      this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-      this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     }
 
   } else if (this.random) {

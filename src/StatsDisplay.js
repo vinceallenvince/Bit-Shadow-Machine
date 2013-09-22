@@ -72,6 +72,10 @@ function StatsDisplay() {
   this.el.style.fontFamily = 'Helvetica';
   this.el.style.padding = '0.5em';
   this.el.style.opacity = '0.5';
+  this.el.style.position = 'absolute';
+  this.el.style.left = '0';
+  this.el.style.top = '0';
+  this.el.style.width = '220px';
 
   /**
    * A reference to the textNode displaying the total number of elements.

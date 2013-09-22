@@ -93,28 +93,28 @@ System.init = function(opt_setup, opt_worlds, opt_noStartLoop) {
   document.body.onorientationchange = System.updateOrientation;
 
   // listen for resize events
-  exports.Utils._addEvent(window, 'resize', function(e) {
+  exports.Utils.addEvent(window, 'resize', function(e) {
     System._resize.call(System, e);
   });
 
   // save the current and last mouse position
-  exports.Utils._addEvent(document, 'mousemove', function(e) {
+  exports.Utils.addEvent(document, 'mousemove', function(e) {
     System._recordMouseLoc.call(System, e);
   });
 
   // save the current and last touch position
-  exports.Utils._addEvent(window, 'touchstart', function(e) {
+  exports.Utils.addEvent(window, 'touchstart', function(e) {
     System._recordMouseLoc.call(System, e);
   });
-  exports.Utils._addEvent(window, 'touchmove', function(e) {
+  exports.Utils.addEvent(window, 'touchmove', function(e) {
     System._recordMouseLoc.call(System, e);
   });
-  exports.Utils._addEvent(window, 'touchend', function(e) {
+  exports.Utils.addEvent(window, 'touchend', function(e) {
     System._recordMouseLoc.call(System, e);
   });
 
   // listen for device motion events (ie. accelerometer)
-  exports.Utils._addEvent(window, 'devicemotion', function(e) {
+  exports.Utils.addEvent(window, 'devicemotion', function(e) {
 
     var world, worlds = System._caches.World.list,
         x = e.accelerationIncludingGravity.x,
@@ -136,7 +136,7 @@ System.init = function(opt_setup, opt_worlds, opt_noStartLoop) {
   });
 
   // listen for key up
-  exports.Utils._addEvent(window, 'keyup', function(e) {
+  exports.Utils.addEvent(window, 'keyup', function(e) {
     System._keyup.call(System, e);
   });
 
@@ -201,8 +201,6 @@ System.add = function(klass, opt_options, opt_world) {
     }
   }
   last = records.length - 1;
-  //parentNode = records[last].el.parentNode;
-  //recordsLookup[records[last].id] = parentNode;
   records[last].reset(options);
   records[last].init(options);
   return records[last];
@@ -343,7 +341,7 @@ System.getAllBuffers = function() {
  */
 System._update = function() {
 
-  var i, max, records = System._records.list, record,
+  var i, max, style, records = System._records.list, record,
       worlds = System.getAllWorlds(),
       world = System.firstWorld(),
       buffers = System.getAllBuffers(), buffer,
@@ -404,9 +402,11 @@ System._update = function() {
 
   // loop thru worlds and apply box shadow
   for (i = worlds.length - 1; i >= 0; i -= 1) {
-    buffer = buffers[worlds[i].id];
-    // remove the last comma
-    worlds[i].el.style.boxShadow = buffer.substr(0, buffer.length - 1);
+    world = worlds[i];
+    style = world.el.style;
+    buffer = buffers[world.id];
+    style.boxShadow = buffer.substr(0, buffer.length - 1); // remove the last comma
+    style.borderRadius = world.borderRadius + '%';
   }
 
 
@@ -783,6 +783,9 @@ System._keyup = function(e) {
       break;
     case 83: // s; reset
       System._toggleStats();
+      break;
+    case 72: // h; hide menu
+      System.firstWorld().toggleMenu();
       break;
   }
 };

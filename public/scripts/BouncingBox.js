@@ -22,16 +22,17 @@ BouncingBox.prototype.init = function(options) {
   this.color = options.color || [100, 100, 100];
   this.borderRadius = options.borderRadius || 0;
 
-  this.acceleration = options.acceleration || new exports.Vector();
-  this.velocity = options.velocity || new exports.Vector();
-  this.location = options.location || new exports.Vector(this.world.width / 2, this.world.height / 2);
+  this.acceleration = options.acceleration || new BitShadowMachine.Vector();
+  this.velocity = options.velocity || new BitShadowMachine.Vector();
+  this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
   this.mass = options.mass || 10;
+  this._force = new BitShadowMachine.Vector();
 
   this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
   this.minSpeed = options.minSpeed || 0;
   this.bounciness = options.bounciness || 1;
 
-  this.checkWorldEdges = typeof options.checkWorldEdges === 'undefined' ? false : true;
+  this.checkWorldEdges = typeof options.checkWorldEdges === 'undefined' ? true : options.checkWorldEdges;
   this.life = options.life || 0;
   this.lifespan = typeof options.lifespan === 'undefined' ? -1 : options.lifespan;
 };
@@ -53,7 +54,7 @@ BouncingBox.prototype.step = function() {
     if (this.life < this.lifespan) {
       this.life++;
     } else if (this.lifespan !== -1) {
-      exports.System.destroyItem(this);
+      BitShadowMachine.System.destroyItem(this);
     }
   }
 };

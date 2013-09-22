@@ -97,7 +97,16 @@ module.exports = function(grunt) {
         report: 'min'
       },
       target: {
-        src: ['src/*.js'],
+        src: [
+          'src/raf.js',
+          'src/Utils.js',
+          'src/Vector.js',
+          'src/StatsDisplay.js',
+          'src/ColorPalette.js',
+          'src/System.js',
+          'src/World.js',
+          'src/Item.js'
+        ],
         dest: 'release/' + latest + '.min.js'
       }
     },
@@ -169,7 +178,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jsdoc');
 
   grunt.registerTask('default', ['cssmin', 'concat', 'copy:publicDev', 'copy:publicCSS']);
-  grunt.registerTask('release', ['jshint', 'jasmine', 'cssmin', 'concat', 'uglify', 'copy:publicMin', 'copy:publicCSS', 'copy:versionCSS', 'copy:versionMinified', 'copy:versionDev', 'plato']);
+  grunt.registerTask('release', ['jshint', 'cssmin', 'concat', 'uglify', 'copy:publicMin', 'copy:publicCSS', 'copy:versionCSS', 'copy:versionMinified', 'copy:versionDev', 'plato']);
   grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('lint', ['jshint']);
   grunt.registerTask('report', ['plato']);
