@@ -397,9 +397,9 @@ System._update = function() {
   // draw
 
   // loop thru and reset buffers
-  for (i = worlds.length - 1; i >= 0; i -= 1) {
+  /*for (i = worlds.length - 1; i >= 0; i -= 1) {
     buffers[worlds[i].id] = '';
-  }
+  }*/
 
   // loop thru records and build box shadows
   for (i = records.length - 1; i >= 0; i -= 1) {
@@ -425,6 +425,7 @@ System._update = function() {
     world = worlds[i];
     style = world.el.style;
     buffer = buffers[world.id];
+    buffers[worlds[i].id] = ''; // clear buffer
     style.boxShadow = buffer.substr(0, buffer.length - 1); // remove the last comma
     style.borderRadius = world.borderRadius + '%';
   }
