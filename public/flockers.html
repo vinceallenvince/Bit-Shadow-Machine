@@ -8,6 +8,7 @@
   <meta name='apple-mobile-web-app-capable' content='yes' />
   <title>Bit-Shadow-Machine</title>
   <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/SimplexNoise.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Walker.js" type="text/javascript" charset="utf-8"></script>
@@ -159,7 +160,7 @@
             seekTarget: seekTarget
           });
         }
-      }, world);
+      }, world, Modernizr);
 
       // update hue or add/remove items
       BitShadowMachine.Utils.addEvent(document, 'keyup', function(e) {

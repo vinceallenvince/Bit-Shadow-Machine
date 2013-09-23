@@ -8,6 +8,7 @@
   <meta name='apple-mobile-web-app-capable' content='yes' />
   <title>Bit-Shadow-Machine</title>
   <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/BouncingBox.js" type="text/javascript" charset="utf-8"></script>
   </head>
@@ -86,7 +87,7 @@
             opacity: getRandomNumber(1, 1, true)
           });
         }
-      }, worldA);
+      }, worldA, Modernizr);
     </script>
   </body>
 </html>

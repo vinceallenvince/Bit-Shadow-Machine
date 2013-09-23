@@ -11,6 +11,16 @@ var System = {
 System.clock = 0;
 
 /**
+ * A map of supported browser features. By default
+ * we're assuming support for boxShadows, rgba, and hsla.
+ */
+System.supportedFeatures = {
+  boxshadow: true,
+  rgba: true,
+  hsla: true
+};
+
+/**
  * Stores references to all items in the system.
  * @private
  */
@@ -72,15 +82,24 @@ System.trace = false;
  * @function init
  * @memberof System
  * @param {Function=} opt_setup Creates the initial system conditions.
- * @param {Object=} opt_world A reference to a DOM element representing the System world.
+ * @param {Object=} opt_worlds A reference to a DOM element representing the System world.
+ * @param {Object=} opt_supportedFeatures A map of supported browser features.
  * @param {boolean=} opt_noStartLoop If true, _update is not called. Use to setup a System
  *    and start the _update loop at a later time.
  */
-System.init = function(opt_setup, opt_worlds, opt_noStartLoop) {
+System.init = function(opt_setup, opt_worlds, opt_supportedFeatures, opt_noStartLoop) {
 
   var setup = opt_setup || function () {},
       worlds = opt_worlds || new exports.World(document.body),
+      supportedFeatures = opt_supportedFeatures || System.supportedFeatures,
       noStartLoop = !opt_noStartLoop ? false : true;
+
+  // halt execution if the browser does not support box shadows
+  if (!supportedFeatures.boxshadow) {
+    throw new Error('BitShadowMachine requires support for CSS Box Shadows.');
+  }
+
+  this.supportedFeatures = supportedFeatures;
 
   if (Object.prototype.toString.call(worlds) === '[object Array]') {
     for (var i = 0, max = worlds.length; i < max; i++) {
@@ -385,9 +404,10 @@ System._update = function() {
   // loop thru records and build box shadows
   for (i = records.length - 1; i >= 0; i -= 1) {
     record = records[i];
-    var inst = record instanceof exports.World;
-    if (record.world && record.location && record.opacity && !inst) {
+    if (record.world && record.location && record.opacity && !(record instanceof exports.World)) {
+      
       shadows = buffers[record.world.id];
+
       if (record.world.colorMode === 'rgba' && record.color) {
         shadows = shadows + System._buildStringRGBA(record);
       } else if (record.world.colorMode === 'hsla' && typeof record.hue !== 'undefined' &&
@@ -433,9 +453,9 @@ System._buildStringHSLA = function(item) {
         (loc.y * resolution) + 'px ' + // right offset
         item.blur + 'px ' + // blur
         (resolution * item.scale) + 'px ' + // spread
-        item.world.colorMode + // color mode
-        '(' + item.hue + ',' + (item.saturation * 100) + '%,' + (item.lightness * 100) + '%,' + // color
-        item.opacity + '),'; // opacity
+        (System.supportedFeatures.hsla ? item.world.colorMode : 'hsl') + // color mode
+        '(' + item.hue + ',' + (item.saturation * 100) + '%,' + (item.lightness * 100) + '%' + // color
+        (System.supportedFeatures.hsla ? ', ' + item.opacity : '') + '),'; // opacity
 };
 
 /**
@@ -452,9 +472,9 @@ System._buildStringRGBA = function(item) {
         (loc.y * resolution) + 'px ' + // right offset
         item.blur + 'px ' + // blur
         (resolution * item.scale) + 'px ' + // spread
-        item.world.colorMode + // color mode
-        '(' + item.color[0] + ',' + item.color[1] + ',' + item.color[2] + ',' + // color
-        item.opacity + '),'; // opacity
+        (System.supportedFeatures.rgba ? item.world.colorMode : 'rgb') + // color mode
+        '(' + item.color[0] + ',' + item.color[1] + ',' + item.color[2] + // color
+        (System.supportedFeatures.rgba ? ', ' + item.opacity : '') + '),'; // opacity
 };
 
 /**
