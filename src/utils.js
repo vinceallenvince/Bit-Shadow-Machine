@@ -112,3 +112,41 @@ Utils.addEvent = function(target, eventType, handler) {
     target.attachEvent("on" + eventType, handler);
   }
 };
+
+/**
+ * Converts degrees to radians.
+ *
+ * @function degreesToRadians
+ * @memberof Utils
+ * @param {number} degrees The degrees value to be converted.
+ * @returns {number} A number in radians.
+ */
+Utils.degreesToRadians = function(degrees) {
+  if (typeof degrees !== 'undefined') {
+    return 2 * Math.PI * (degrees/360);
+  } else {
+    if (typeof console !== 'undefined') {
+      console.log('Error: Utils.degreesToRadians is missing degrees param.');
+    }
+    return false;
+  }
+};
+
+/**
+ * Converts radians to degrees.
+ *
+ * @function radiansToDegrees
+ * @memberof Utils
+ * @param {number} radians The radians value to be converted.
+ * @returns {number} A number in degrees.
+ */
+Utils.radiansToDegrees = function(radians) {
+  if (typeof radians !== 'undefined') {
+    return radians * (180/Math.PI);
+  } else {
+    if (typeof console !== 'undefined') {
+      console.log('Error: Utils.radiansToDegrees is missing radians param.');
+    }
+    return false;
+  }
+};

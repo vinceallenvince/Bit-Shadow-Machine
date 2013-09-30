@@ -89,6 +89,7 @@ Flocker.prototype.step = function() {
     this.flock(BitShadowMachine.System.getAllItemsByName('Flocker'));
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxSpeed, this.minSpeed);
+    this.angle = BitShadowMachine.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
     this.location.add(this.velocity);
     if (this.checkWorldEdges) {
       this._checkWorldEdges();

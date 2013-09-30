@@ -69,7 +69,7 @@
       });
 
       var currentBaseHue = 0;
-      var totalInitialItems = 60;
+      var totalInitialItems = 30;
       var seekTarget = null;
 
       var createFlocker = function(props) {
@@ -111,7 +111,8 @@
             width: props.size,
             height: props.size,
             mass: mass,
-            scale: map(mass, props.massMin, props.massMax, 0.25, props.maxScale),
+            //scale: map(mass, props.massMin, props.massMax, 0.25, props.maxScale),
+            scale: 1,
             maxSpeed: props.maxSpeed,
             color: palette.getColor(),
             hue: getRandomNumber(props.hueMin, props.hueMax),
@@ -134,6 +135,11 @@
       /**
        * Create a new BitShadowMachine system.
        */
+      BitShadowMachine.System.recordData = true;
+      BitShadowMachine.System.totalFrames = 300;
+      BitShadowMachine.System.totalFramesCallback = function() {
+        console.log(BitShadowMachine.System.recordedData);
+      };
       BitShadowMachine.System.init(function() {
 
         var location = new BitShadowMachine.Vector(BitShadowMachine.System.firstWorld().width / 2,

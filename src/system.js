@@ -1,4 +1,4 @@
-/*global window, document, setTimeout, Burner, Modernizr */
+/*global window, document, setTimeout, Burner, Modernizr, console */
 /*jshint supernew:true */
 /** @namespace */
 var System = {
@@ -56,15 +56,84 @@ System.mouse = {
  * Stores the time in milliseconds of the last
  * resize event. Used to pause renderer during resize
  * and resume when resize is complete.
- *
+ * @type number
  * @private
  */
 System._resizeTime = 0;
 
 /**
  * Set to true log flags in a performance tracing tool.
+ * @type boolean
  */
 System.trace = false;
+
+/**
+ * Set to a positive number to render only those frames. Leave at
+ * -1 to ignore.
+ * @type number
+ */
+System.totalFrames = -1;
+
+/**
+ * Set to true to save properties defined in System.recordItemProperties from
+ * each object in each frame.
+ * @type boolean
+ */
+System.recordData = false;
+
+/**
+ * Defines the properties to save in System.recordedData for each item
+ * in each frame.
+ * @type Object
+ */
+System.recordItemProperties = {
+  id: true,
+  name: true,
+  width: true,
+  height: true,
+  scale: true,
+  location: true,
+  velocity: true,
+  angle: true,
+  minSpeed: true,
+  maxSpeed: true,
+  hue: true,
+  saturation: true,
+  lightness: true,
+  color: true,
+  opacity: true
+};
+
+/**
+ * Defines the properties to save in System.recordedData for each world
+ * in each frame.
+ * @type Object
+ */
+System.recordWorldProperties = {
+  id: true,
+  name: true,
+  width: true,
+  height: true,
+  resolution: true,
+  colorMode: true
+};
+
+/**
+ * Stores properties from each object in each frame.
+ * @type Array
+ * @example
+ [
+    {
+      frame: 0,
+      items: [
+        {},
+        {},
+        ...
+      ]
+    }
+ ]
+ */
+System.recordedData = [];
 
 /**
  * Initializes the system and starts the update loop.
@@ -358,8 +427,23 @@ System._update = function() {
     }
   }
 
+  // check if we've exceeded totalFrames
+  if (System.totalFrames > -1 && System.clock >= System.totalFrames) {
+    System.totalFramesCallback();
+    return;
+  }
+
   if (System.trace) {
     console.time('update');
+  }
+
+  // setup entry in System.recordedData
+  if (System.recordData) {
+    System.recordedData.push({
+      frame: System.clock,
+      world: {},
+      items: []
+    });
   }
 
   // step
@@ -367,6 +451,10 @@ System._update = function() {
     record = records[i];
     if (record.step && !record.world.pauseStep) {
       record.step();
+    }
+    if (System.recordData && record.name !== 'World' && record.opacity) { // we don't want to record World data as Item
+      System.recordedData[System.recordedData.length - 1].items.push({});
+      System._saveData(System.recordedData[System.recordedData.length - 1].items.length - 1, record);
     }
   }
 
@@ -417,6 +505,15 @@ System._update = function() {
 
   System.clock++;
   window.requestAnimFrame(System._update);
+};
+
+/**
+ * Called if System.totalFrames > -1 and exceeds System.clock.
+ */
+System.totalFramesCallback = function() {
+  if (console) {
+    console.log('Rendered ' + System.totalFrames + ' frames.');
+  }
 };
 
 /**
@@ -484,6 +581,32 @@ System._stepForward = function() {
       }
     }
   System.clock++;
+};
+
+/**
+ * Saves properties of the passed record that match properties
+ * defined in System.recordItemProperties.
+ * @param {number} index The array index for this object.
+ * @param {Object} record An Item instance.
+ */
+System._saveData = function(index, record) {
+  for (var i in record) {
+    if (record.hasOwnProperty(i) && System.recordItemProperties[i]) {
+      var val = record[i];
+      if (val instanceof Vector) { // we want to copy the scalar values out of the Vector
+        val = {
+          x: record[i].x,
+          y: record[i].y
+        };
+      }
+      System.recordedData[System.recordedData.length - 1].items[index][i] = val;
+    }
+    for (var j in record.world) {
+      if (record.world.hasOwnProperty(j) && System.recordWorldProperties[j]) {
+        System.recordedData[System.recordedData.length - 1].world[j] = record.world[j];
+      }
+    }
+  }
 };
 
 /**
