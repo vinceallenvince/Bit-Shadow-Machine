@@ -484,16 +484,11 @@ System._update = function() {
 
   // draw
 
-  // loop thru and reset buffers
-  /*for (i = worlds.length - 1; i >= 0; i -= 1) {
-    buffers[worlds[i].id] = '';
-  }*/
-
   // loop thru records and build box shadows
   for (i = records.length - 1; i >= 0; i -= 1) {
     record = records[i];
     if (record.world && record.location && record.opacity && !(record instanceof exports.World)) {
-      
+
       shadows = buffers[record.world.id];
 
       if (record.world.colorMode === 'rgba' && record.color) {
@@ -523,9 +518,22 @@ System._update = function() {
     console.timeEnd('render');
   }
 
+  if (System.totalFrames > -1) {
+    System.frameCompleteCallback(System.clock, System.recordedData[System.clock]);
+  }
 
   System.clock++;
+
   window.requestAnimFrame(System._update);
+};
+
+/**
+ * Called if System.totalFrames > -1 and exceeds System.clock.
+ */
+System.frameCompleteCallback = function(frameNumber, data) {
+  if (console) {
+    console.log('Rendered ' + frameNumber + ' frame.');
+  }
 };
 
 /**
@@ -616,9 +624,12 @@ System._saveData = function(index, record) {
       var val = record[i];
       if (val instanceof Vector) { // we want to copy the scalar values out of the Vector
         val = {
-          x: record[i].x,
-          y: record[i].y
+          x: parseFloat(record[i].x.toFixed(2), 10),
+          y: parseFloat(record[i].y.toFixed(2), 10)
         };
+      }
+      if (typeof val === 'number') {
+        val = parseFloat(val.toFixed(2), 10);
       }
       System.recordedData[System.recordedData.length - 1].items[index][i] = val;
     }
@@ -717,13 +728,15 @@ System._destroyAllWorlds = function() {
   for (i = items.length - 1; i >= 0; i--) {
     item = items[i];
     if (item.name === 'World') {
-      item.el.parentNode.removeChild(item.el);
+      var container = item.el.parentNode;
+      container.parentNode.removeChild(container);
       items.splice(i, 1);
     }
   }
   this._worlds = {
     lookup: {},
-    list: []
+    list: [],
+    buffers: {}
   };
 };
 
