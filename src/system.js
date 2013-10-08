@@ -262,10 +262,9 @@ System._addWorld = function(world) {
  */
 System.add = function(klass, opt_options, opt_world) {
 
-  var i, max, last, parentNode, pool,
+  var options = opt_options || {},
       records = this._records.list,
-      recordsLookup = this._records.lookup,
-      options = opt_options || {};
+      i, max, item, pool;
 
   options.world = opt_world || records[0];
 
@@ -275,23 +274,21 @@ System.add = function(klass, opt_options, opt_world) {
   if (pool.length) {
     for (i = 0, max = options.world._pool.length; i < max; i++) {
       if (options.world._pool[i].name === klass) {
-        records[records.length] = options.world._pool.splice(i, 1)[0];
-        records[records.length - 1].options = options;
-        System._updateCacheLookup(records[records.length - 1], true);
+        item = options.world._pool.splice(i, 1)[0];
         break;
       }
     }
   } else {
     if (BitShadowMachine[klass]) {
-      records[records.length] = new BitShadowMachine[klass](options);
+      item = new BitShadowMachine[klass](options);
     } else {
-      records[records.length] = new BitShadowMachine.Classes[klass](options);
+      item = new BitShadowMachine.Classes[klass](options);
     }
   }
-  last = records.length - 1;
-  records[last].reset(options);
-  records[last].init(options);
-  return records[last];
+  item.reset(options);
+  item.init(options);
+  System._records.list.push(item);
+  return item;
 };
 
 /**
