@@ -3,7 +3,7 @@
  * Creates a new Flocker.
  *
  * @constructor
- * @extends Mover
+ * @extends BitShadowMachine.Item
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Flocker(opt_options) {

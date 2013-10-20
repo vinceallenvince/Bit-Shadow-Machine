@@ -7,7 +7,7 @@
  * for Agents to seek. They are not affected by gravity or friction.
  *
  * @constructor
- * @extends Mover
+ * @extends BitShadowMachine.Item
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Walker(opt_options) {

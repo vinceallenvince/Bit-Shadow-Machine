@@ -150,3 +150,22 @@ Utils.radiansToDegrees = function(radians) {
     return false;
   }
 };
+
+/**
+ * Constrain a value within a range.
+ *
+ * @function constrain
+ * @memberof Utils
+ * @param {number} val The value to constrain.
+ * @param {number} low The lower bound of the range.
+ * @param {number} high The upper bound of the range.
+ * @returns {number} A number.
+ */
+Utils.constrain = function(val, low, high) {
+  if (val > high) {
+    return high;
+  } else if (val < low) {
+    return low;
+  }
+  return val;
+};

@@ -517,6 +517,7 @@ System._update = function() {
 
   if (System.totalFrames > -1) {
     System.frameCompleteCallback(System.clock, System.recordedData[System.clock]);
+    System.recordedData = [];
   }
 
   System.clock++;

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="Bit-Shadow-Machine" />
+  <meta name="description" content="Bit-Shadow Machine renders particles in a web browser using CSS box shadows." />
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <title>Bit-Shadow-Machine</title>
+  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Repeller.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Seeker.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/SimplexNoise.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var totalItems = 800;
+      var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
+      var palette = new BitShadowMachine.ColorPalette();
+      palette.addColor({
+        min: 12,
+        max: 24,
+        startColor: [248, 215, 173],
+        endColor: [230, 186, 131]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [244, 192, 157],
+        endColor: [218, 149, 103]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [255, 243, 216],
+        endColor: [230, 210, 167]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [250, 219, 142],
+        endColor: [222, 182, 84]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [252, 221, 205],
+        endColor: [219, 164, 134]
+      });
+
+      var klasses = {
+        Repeller: Repeller,
+        Seeker: Seeker
+      };
+
+      /**
+       * Tell BitShadowMachine where to find classes.
+       */
+      BitShadowMachine.Classes = klasses;
+
+      var worldA = new BitShadowMachine.World(document.getElementById('worldA'), {
+        width: 960,
+        height: 540,
+        resolution: 4,
+        backgroundColor: [0, 0, 0],
+        colorMode: 'hsla',
+        hue: 0,
+        saturation: 0,
+        lightness: 0,
+      });
+
+      /**
+       * Create a new BitShadowMachine system.
+       */
+      BitShadowMachine.System.init(function() {
+
+        this.add('Repeller', {
+          G: -1,
+          scale: 20,
+          mass: 150,
+          color: palette.getColor(),
+          opacity: 0,
+          location: new BitShadowMachine.Vector(worldA.width / 4, worldA.height / 2),
+          beforeStep: function() {
+
+            this.mass = Math.abs(SimplexNoise.noise(BitShadowMachine.System.clock * 0.001, 0) * 150);
+
+            for (var i = 0; i < 30; i++) {
+
+              var location = new BitShadowMachine.Vector(-100, worldA.height / 2);
+
+              var offset = new BitShadowMachine.Vector(0, getRandomNumber(-20, 20));
+              location.add(offset);
+
+              var scale = getRandomNumber(.1, 2, true);
+
+              BitShadowMachine.System.add('Seeker', {
+                location: location,
+                blur: 0,
+                scale: scale,
+                mass: getRandomNumber(10, 20),
+                maxSpeed: 10,
+                color: palette.getColor(),
+                opacity: 1,
+                checkWorldEdges: false,
+                hue: 10,
+                saturation: 0.5,
+                lightness: 0.5,
+                seekTarget: {
+                  location: new BitShadowMachine.Vector(worldA.width, worldA.height / 2)
+                },
+                beforeStep: function() {
+                  if (this.location.x > worldA.width) {
+                    BitShadowMachine.System.destroyItem(this);
+                  }
+                  this.opacity = BitShadowMachine.Utils.map(this.velocity.mag(), 0, this.maxSpeed, 1, 0.15);
+                }
+              });
+            }
+          }
+        });
+      }, worldA, Modernizr);
+    </script>
+  </body>
+</html>
