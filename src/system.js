@@ -92,6 +92,18 @@ System.totalFrames = -1;
 System.recordData = false;
 
 /**
+ * Recording starts with this frame number.
+ * @type number
+ */
+System.recordStartFrame = null;
+
+/**
+ * Recording ends with this frame number.
+ * @type number
+ */
+System.recordEndFrame = null;
+
+/**
  * Defines the properties to save in System.recordedData for each item
  * in each frame.
  * @type Object
@@ -455,11 +467,11 @@ System._update = function() {
 
   // setup entry in System.recordedData
   if (System.recordData) {
-    System.recordedData.push({
+    System.recordedData = [{
       frame: System.clock,
       world: {},
       items: []
-    });
+    }];
   }
 
   // step
@@ -469,6 +481,9 @@ System._update = function() {
       record.step();
     }
     if (System.recordData && record.name !== 'World' && record.opacity) { // we don't want to record World data as Item
+      if (!System._checkRecordFrame()) {
+        continue;
+      }
       System.recordedData[System.recordedData.length - 1].items.push({});
       System._saveData(System.recordedData[System.recordedData.length - 1].items.length - 1, record);
     }
@@ -515,9 +530,10 @@ System._update = function() {
     console.timeEnd('render');
   }
 
-  if (System.totalFrames > -1) {
+  // check to call frame complete callback.
+  if (System.totalFrames > -1 && System._checkRecordFrame()) {
     System.frameCompleteCallback(System.clock, System.recordedData[System.clock]);
-    System.recordedData = [];
+    System.recordedData = null;
   }
 
   System.clock++;
@@ -530,7 +546,7 @@ System._update = function() {
  */
 System.frameCompleteCallback = function(frameNumber, data) {
   if (console) {
-    console.log('Rendered ' + frameNumber + ' frame.');
+    console.log('Rendered frame ' + frameNumber + '.');
   }
 };
 
@@ -631,12 +647,27 @@ System._saveData = function(index, record) {
       }
       System.recordedData[System.recordedData.length - 1].items[index][i] = val;
     }
-    for (var j in record.world) {
-      if (record.world.hasOwnProperty(j) && System.recordWorldProperties[j]) {
-        System.recordedData[System.recordedData.length - 1].world[j] = record.world[j];
+    if (!System.recordedData[System.recordedData.length - 1].world.id) {
+      for (var j in record.world) {
+        if (record.world.hasOwnProperty(j) && System.recordWorldProperties[j]) {
+          System.recordedData[System.recordedData.length - 1].world[j] = record.world[j];
+        }
       }
     }
   }
+};
+
+/**
+ * If recordStartFrame and recordEndFrame have been specified,
+ * checks if System.clock is within bounds.
+ * @returns {Boolean} True if frame should be recorded.
+ */
+System._checkRecordFrame = function() {
+  if (System.recordStartFrame && System.recordEndFrame &&
+      (System.recordStartFrame > System.clock || System.clock > System.recordEndFrame)) {
+    return false;
+  }
+  return true;
 };
 
 /**

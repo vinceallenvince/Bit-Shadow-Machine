@@ -9,7 +9,7 @@
   <title>Bit-Shadow-Machine</title>
   <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
   <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/BitShadowMachine.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/SimplexNoise.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Walker.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Flocker.js" type="text/javascript" charset="utf-8"></script>
@@ -137,6 +137,8 @@
        * Create a new BitShadowMachine system.
        */
       BitShadowMachine.System.recordData = true;
+      BitShadowMachine.System.recordStartFrame = 10;
+      BitShadowMachine.System.recordEndFrame = 100;
       BitShadowMachine.System.totalFrames = 300;
       BitShadowMachine.System.totalFramesCallback = function() {
         console.log(BitShadowMachine.System.recordedData);
