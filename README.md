@@ -162,7 +162,7 @@ The Bit-Shadow Machine system will execute an item's step() method each iteratio
 
 ## Multiple items
 
-Now we'll see the power of the Bit-Shadow Machine kick in. Replace the System.init() call with the following.
+Now we'll see the power of the Bit-Shadow Machine. Replace the System.init() call with the following.
 
 ```javascript
 BitShadowMachine.System.init(function() {
@@ -180,7 +180,7 @@ BitShadowMachine.System.init(function() {
 }, null, Modernizr);
 ```
 
-We're adding 500 items with random scale and random location. We've also inversely mapped scale and opacity so the largest items have the most opacity.
+We're adding 500 items with random scale and random location. We've also inversely mapped scale and opacity so the largest items have the least opacity.
 
 Press 's' on your keyboard. You should see a status menu appear in the top left that indicates the total number of objects and the current frame rate. You should see 501 items (the world counts as an item) and a frame rate close to 60 frames per second.
 
@@ -207,11 +207,11 @@ BitShadowMachine.System.init(function() {
 }, null, Modernizr);
 ```
 
-We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the item's blur as they accelerate.
+We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the items blur as they accelerate.
 
 Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps.
 
-Now step back and remember these are box shadows.
+Now step back and remember these animated items are all just CSS box shadows on the document body.
 
 Building this project
 ======
