@@ -1,4 +1,4 @@
-Bit-Shadow-Machine
+Bit-Shadow Machine: A JavaScript framework for creating particle and frame-based animation.
 ======
 
 Bit-Shadow Machine renders particles in a web browser using CSS box shadows. That's it. No HTML5 Canvas, WebGL or even a single DOM element.
@@ -19,7 +19,7 @@ In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass t
 
 IMPORTANT: Your items must extend the BitShadowMachine.Item class.
 
-The following is taken from examples/simple.html.
+The following is taken from public/simple.html.
 
 ```html
 <!DOCTYPE html>
@@ -69,7 +69,7 @@ The following is taken from examples/simple.html.
 
 Notice we're defining a Box class that extends BitShadowMachine.Item. The class must also have an init() method to set additional properties.
 
-Loading the above, you should see a gray box in the middle of the browser. You can find the code public/simple.html.
+Loading the above, you should see a gray box in the middle of the browser.
 
 ## Animation
 
@@ -156,7 +156,7 @@ Let's make the box move.
     </script>
   </body>
 </html>
-```html
+```
 
 The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. You can find the code public/simple-anim.html.
 
@@ -178,7 +178,7 @@ BitShadowMachine.System.init(function() {
     });
   }
 }, null, Modernizr);
-```javascript
+```
 
 We're adding 500 items with random scale and random location. We've also inversely mapped scale and opacity so the largest items have the most opacity.
 
@@ -205,7 +205,7 @@ BitShadowMachine.System.init(function() {
     });
   }
 }, null, Modernizr);
-```javascript
+```
 
 We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the item's blur as they accelerate.
 
