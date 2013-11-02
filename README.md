@@ -1,6 +1,7 @@
-# Bit-Shadow Machine: a JavaScript framework for creating particle animations
+Bit-Shadow Machine: A JavaScript framework for creating particle and frame-based animation.
+======
 
-A Bit-Shadow Machine renders particles in a web browser using CSS box shadows. That's it. No HTML5 Canvas, WebGL or even a single DOM element.
+Bit-Shadow Machine renders particles in a web browser using CSS box shadows. That's it. No HTML5 Canvas, WebGL or even a single DOM element.
 
 By default, the box shadows are attached to your document's body. Freed from parsing the render tree, the browser can animate many more particles than with conventional methods. You should be able to easily render several hundred particles at 60 frames per second.
 
@@ -10,191 +11,231 @@ View a demo at http://www.bitshadowmachine.com
 
 Think of a Bit-Shadow Machine as a rendering engine. You supply the particles to animate. It takes care of drawing them on screen.
 
-To setup a simple Bit-Shadow Machine, reference the bitshadowmachine.min.js file from a script tag in the &lt;head&gt; of your document. Also, reference the bitshadowmachine.css file.
+To setup a simple Bit-Shadow Machine, reference BitShadowMachine.min.js and Modernizr.min.js from a script tag in the &lt;head&gt; of your document.
 
-In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass the system a function that describes the elements in the system.
+Also, reference the bitshadowmachine.css file.
 
-IMPORTANT: Your elements must extend the BitShadowMachine.Element class.
+In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass the system a function that adds items to the system.
 
-The following is taken from examples/simple.html.
+IMPORTANT: Your items must extend the BitShadowMachine.Item class.
+
+The following is taken from public/simple.html.
 
 ```html
 <!DOCTYPE html>
-  <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title>Bit-Shadow Machine</title>
-    <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8">
-    <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-    <script type="text/javascript">
+    <script type="text/javascript" charset="utf-8">
 
-      var SimpleAnim = {}, exports = SimpleAnim;
+      function Box(opt_options) {
+        var options = opt_options || {};
+        options.name = 'Box';
+        BitShadowMachine.Item.call(this, options);
+      }
+      BitShadowMachine.Utils.extend(Box, BitShadowMachine.Item);
 
-      (function(exports) {
+      // An init() method is required.
+      Box.prototype.init = function(options) {
+        this.color = options.color || [100, 100, 100];
+        this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
+      };
 
-        // create BitShadowMachine namespace
-        exports.BitShadowMachine = {};
+      /**
+       * Tell BitShadowMachine where to find classes.
+       */
+      BitShadowMachine.Classes = {
+        Box: Box
+      };
 
-        // pass in the namespace and parent object
-        new BitShadowMachine(exports.BitShadowMachine, exports);
+      var worldA = new BitShadowMachine.World();
 
-        function Block(opt_options) {
-
-          var options = opt_options || {},
-              bsm = exports.BitShadowMachine,
-              utils = exports.BitShadowMachine.Utils;
-
-          bsm.Element.call(this, options); // Required: extend Element
-
-          this.world = options.world;
-
-          this.id = options.id;
-          this.width = options.width || 1;
-          this.height = options.height || 1;
-          this.mass = options.mass || 1;
-          this.color = options.color || [255, 255, 255];
-          this.opacity = options.opacity || 0.8;
-          this.bounciness = options.bounciness || 0.8;
-
-          this.acceleration = utils.getDataType(options.acceleration) === 'function' ?
-              options.acceleration() : options.acceleration || new bsm.Vector();
-
-          this.velocity = utils.getDataType(options.velocity) === 'function' ?
-              options.velocity() : options.velocity || new bsm.Vector();
-
-          this.location = utils.getDataType(options.location) === 'function' ?
-              options.location() : options.location ||
-              new bsm.Vector(this.world.width / 2, this.world.height/ 2);
-
-          this.maxSpeed = options.maxSpeed || 100;
-
-          this.forceVector = new bsm.Vector();
-          this.name = 'block';
-
-          return this;
-        }
-        exports.BitShadowMachine.Utils.extend(Block,
-            exports.BitShadowMachine.Element);  // Required: extend Element
-
-        /**
-         * Called every frame, step() updates the instance's properties.
-         */
-        Block.prototype.step = function() {
-
-          this.applyForce(this.world.gravity); // gravity
-
-          this.velocity.add(this.acceleration); // add acceleration
-
-          if (this.maxSpeed) {
-            this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-          }
-
-          this.location.add(this.velocity); // add velocity
-
-          this.checkEdges(); // check world bounds
-
-          this.acceleration.mult(0); // reset acceleration
-        };
-
-        /**
-         * Applies a force to this object's acceleration via F = M * A.
-         *
-         * @param {Object} force The force to be applied (expressed as a vector).
-         */
-        Block.prototype.applyForce = function(force) {
-          this.forceVector.x = force.x;
-          this.forceVector.y = force.y;
-          this.forceVector.div(this.mass);
-          this.acceleration.add(this.forceVector);
-        };
-
-        /**
-         * Checks if this object is outside the world bounds.
-         */
-        Block.prototype.checkEdges = function() {
-
-          if (this.location.y - this.height/2 < 0) { // top
-            this.velocity.mult(-this.bounciness);
-            this.location.y = this.height/2;
-            return;
-          }
-
-          if (this.location.x + this.width/2 > this.world.width) { // right
-            this.velocity.mult(-this.bounciness);
-            this.location.x = this.world.width - this.width/2;
-            return;
-          }
-
-          if (this.location.y + this.height/2 > this.world.height) { // bottom
-            this.velocity.mult(-this.bounciness);
-            this.location.y = this.world.height - this.height/2;
-            return;
-          }
-
-          if (this.location.x - this.width/2 < 0) { // left
-            this.velocity.mult(-this.bounciness);
-            this.location.x = this.width/2;
-            return;
-          }
-        };
-        exports.Block = Block;
-
-      }(exports));
-
-      var totalBlocks = 200,
-          bsm = SimpleAnim.BitShadowMachine;
-
-      var system = new bsm.System.create(function() {
-        for (var i = 0; i < totalBlocks; i++) {
-          bsm.System.add('Block', {
-            mass: bsm.Utils.map(i, 0, totalBlocks, 0.1, 1),
-            location: function() {
-              return new bsm.Vector(bsm.Utils.getRandomNumber(0, this.world.width),
-                  this.world.height / 4);
-            }
-          });
-        }
-      });
-
+      /**
+       * Create a new BitShadowMachine system.
+       */
+      BitShadowMachine.System.init(function() {
+        this.add('Box');
+      }, null, Modernizr);
     </script>
   </body>
 </html>
 ```
 
-You should see 200 blocks fall and bounce off the bottom of your browser. http://www.bitshadowmachine.com/examples/
+Notice we're defining a Box class that extends BitShadowMachine.Item. The class must also have an init() method to set additional properties.
 
-## Update your world
+Loading the above, you should see a gray box in the middle of the browser.
 
-Currently, all particles in the Bit-Shadow Machine are the same size. By default, the resolution is 8px X 8px. To change the resolution, pass in a new resolution when creating a new system.
+## Animation
 
-Replace the System.create() call above with this:
+Let's make the box move.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      function Box(opt_options) {
+        var options = opt_options || {};
+        options.name = 'Box';
+        BitShadowMachine.Item.call(this, options);
+      }
+      BitShadowMachine.Utils.extend(Box, BitShadowMachine.Item);
+
+      // An init() method is required.
+      Box.prototype.init = function(options) {
+        this.color = options.color || [100, 100, 100];
+        this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
+        this.acceleration = options.acceleration || new BitShadowMachine.Vector();
+        this.velocity = options.velocity || new BitShadowMachine.Vector();
+        this.mass = options.mass || 10;
+        this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
+        this.minSpeed = options.minSpeed || 0;
+        this.bounciness = options.bounciness || 1;
+        this._force = new BitShadowMachine.Vector();
+      };
+
+      Box.prototype.step = function() {
+        if (this.beforeStep) {
+          this.beforeStep.call(this);
+        }
+        this.applyForce(this.world.gravity);
+        this.velocity.add(this.acceleration);
+        this.velocity.limit(this.maxSpeed, this.minSpeed);
+        this.location.add(this.velocity);
+        this._checkWorldEdges();
+        this.acceleration.mult(0);
+      };
+
+      Box.prototype.applyForce = function(force) {
+        if (force) {
+          this._force.x = force.x;
+          this._force.y = force.y;
+          this._force.div(this.mass);
+          this.acceleration.add(this._force);
+          return this.acceleration;
+        }
+      };
+
+      Box.prototype._checkWorldEdges = function() {
+        if (this.location.y > this.world.height) { // bottom
+          this.velocity.mult(-this.bounciness);
+          this.location.y = this.world.height;
+          return;
+        }
+      };
+
+      /**
+       * Tell BitShadowMachine where to find classes.
+       */
+      BitShadowMachine.Classes = {
+        Box: Box
+      };
+
+      var worldA = new BitShadowMachine.World();
+
+      /**
+       * Create a new BitShadowMachine system.
+       */
+      BitShadowMachine.System.init(function() {
+        this.add('Box');
+      }, null, Modernizr);
+    </script>
+  </body>
+</html>
+```
+
+The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. You can find the code public/simple-anim.html.
+
+## Multiple items
+
+Now we'll see the power of the Bit-Shadow Machine. Replace the System.init() call with the following.
 
 ```javascript
+BitShadowMachine.System.init(function() {
+  var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
+  for (var i = 0; i < 500; i++) {
+    var scale = getRandomNumber(0.25, 2, true);
+    this.add('Box', {
+      location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
+          getRandomNumber(0, worldA.height / 2)),
+      opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+      scale: scale,
+      mass: scale
+    });
+  }
+}, null, Modernizr);
+```
 
-var system = new bsm.System.create(function() {
-  for (var i = 0; i < totalBlocks; i++) {
-    bsm.System.add('Block', {
-      mass: bsm.Utils.map(i, 0, totalBlocks, 0.1, 1),
-      location: function() {
-        return new bsm.Vector(bsm.Utils.getRandomNumber(0, this.world.width),
-            this.world.height / 4);
+We're adding 500 items with random scale and random location. We've also inversely mapped scale and opacity so the largest items have the least opacity.
+
+Press 's' on your keyboard. You should see a status menu appear in the top left that indicates the total number of objects and the current frame rate. You should see 501 items (the world counts as an item) and a frame rate close to 60 frames per second.
+
+## Blur
+
+Since we're using CSS box-shadows, we can also apply blur to our items. Replace the System.init function with the following.
+
+```javascript
+BitShadowMachine.System.init(function() {
+  var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
+  for (var i = 0; i < 250; i++) {
+    var scale = getRandomNumber(0.25, 2, true);
+    this.add('Box', {
+      location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
+          getRandomNumber(0, worldA.height / 2)),
+      opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+      scale: scale,
+      mass: scale,
+      beforeStep: function() {
+        this.blur = BitShadowMachine.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 0, 100);
       }
     });
   }
-},
-{
-  el: document.body,
-  resolution: 4
-});
+}, null, Modernizr);
+```
+
+We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the items blur as they accelerate.
+
+Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps.
+
+Now step back and remember these animated items are all just CSS box shadows on the document body.
+
+Building this project
+======
+
+This project uses [Grunt](http://gruntjs.com). To build the project first install the node modules.
 
 ```
-You should see 4px X 4px blocks. You can change your world's gravity, and colorMode via the same method.
+npm install
+```
 
-## What now?
+Next, run grunt.
 
-Because a Bit-Shadow Machine is strictly a rendering engine, it's up to you to create your own particle systems. You can build off the example above or check out the anim.js file in the /dev/scripts/ folder.
+```
+grunt
+```
 
-Also, because a Bit-Shadow Machine depends on CSS box shadows, your browser must support them. But all modern browsers support the box-shadow rule except IE8 and below.
+A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:
 
+```
+ln -s ../../pre-commit .git/hooks/pre-commit
+```
+
+A post-commit hook is defined in /post-commit that runs the Plato complexity analysis tools. To use the hook, run the following:
+
+```
+ln -s ../../post-commit .git/hooks/post-commit
+```

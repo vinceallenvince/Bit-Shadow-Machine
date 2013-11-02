@@ -1,0 +1,55 @@
+body {
+  position: static;
+  font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+  font-weight: normal;
+  color: rgb(90, 90, 90);
+  overflow: hidden;
+}
+
+a, a:visited {
+  text-decoration: none;
+  color: rgb(30, 30, 30);
+}
+
+a:hover {
+  color: rgb(120, 120, 120);
+}
+
+header {
+  position: static;
+  top: 0; left: 0;
+  width: 100%;
+  height: 1em;
+  padding: 0.5em 1em 1em;
+  background-color: rgba(255, 255, 255, 0.25);
+  opacity: 1;
+}
+
+footer {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%;
+  line-height: 1em;
+  height: 1em;
+  padding: 1em;
+  background-color: rgba(255, 255, 255, 0.25);
+  opacity: 1;
+  font-size: 0.85em;
+}
+
+table td.cell-logo {
+  padding-right: 20px;
+}
+
+.logo-footer {
+  float: left;
+  margin-right: 10px;
+}
+
+@media screen and (max-width: 320px) { /* iphone portrait */
+
+  header, footer {
+    display: none;
+  }
+
+}
