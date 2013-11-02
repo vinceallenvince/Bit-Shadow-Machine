@@ -213,6 +213,15 @@ Rendering blur is an intensive operation that requires us to decrease the total 
 
 Now step back and remember these animated items are all just CSS box shadows on the document body.
 
+## A world
+
+A Bit-Shadow world can be any element that has a box shadow. In the example below, we've placed a &lt;div&gt; in the body and passed in as the second argument to the System.init() method.
+
+```html
+
+```
+
+
 Building this project
 ======
 

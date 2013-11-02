@@ -178,7 +178,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jsdoc');
 
   grunt.registerTask('default', ['cssmin', 'concat', 'copy:publicDev', 'copy:publicCSS']);
-  grunt.registerTask('release', ['jshint', 'cssmin', 'concat', 'uglify', 'copy:publicMin', 'copy:publicCSS', 'copy:versionCSS', 'copy:versionMinified', 'copy:versionDev', 'plato']);
+  grunt.registerTask('release', ['jshint', 'cssmin', 'concat', 'uglify', 'copy:publicMin', 'copy:publicCSS', 'copy:versionCSS', 'copy:versionMinified', 'copy:versionDev', 'plato', 'jsdoc']);
   grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('lint', ['jshint']);
   grunt.registerTask('report', ['plato']);
