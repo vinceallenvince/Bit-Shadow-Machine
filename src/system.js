@@ -532,7 +532,7 @@ System._update = function() {
 
   // check to call frame complete callback.
   if (System.totalFrames > -1 && System._checkRecordFrame()) {
-    System.frameCompleteCallback(System.clock, System.recordedData[System.clock]);
+    System.frameCompleteCallback(System.clock, System.recordedData[0]);
     System.recordedData = null;
   }
 
