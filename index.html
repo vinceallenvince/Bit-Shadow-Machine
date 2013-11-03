@@ -1,1 +1,67 @@
-My GitHub Page
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' content='text/html; charset=UTF-8' />
+  <title>Bit-Shadow Machine</title>
+  <link href='css/main.css' rel='stylesheet' type='text/css' charset='utf-8' />
+  <script src='scripts/AudioInputAnalyzer.min.js' type='text/javascript' charset='utf-8'></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-9773576-15', 'foldi.github.io');
+    ga('send', 'pageview');
+
+  </script>
+  </head>
+  <body>
+  	<h1>Bit-Shadow Machine</h1>
+    <p>Bit-Shadow Machine renders particles in a web browser using CSS box shadows. That's it. No HTML5 Canvas, WebGL or even a single DOM element.</p>
+
+    <p>By default, the box shadows are attached to your document's body. Freed from parsing the render tree, the browser can animate many more particles than with conventional methods. You should be able to easily render several hundred particles at 60 frames per second.</p>
+
+    <h3>Github</h3>
+    <p><a href='https://github.com/foldi/Bit-Shadow-Machine'>https://github.com/foldi/Bit-Shadow-Machine</a></p>
+
+    <h3>Examples</h3>
+
+    <h3><a href='simple.html'>Simple</a></h3>
+    <p>To setup a simple Bit-Shadow Machine, reference BitShadowMachine.min.js and Modernizr.min.js from a script tag in the &lt;head&gt; of your document.</p>
+
+    <p>Also, reference the bitshadowmachine.css file.</p>
+
+    <p>In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass the system a function that adds items to the system.</p>
+
+    <p>IMPORTANT: Your items must extend the BitShadowMachine.Item class.</p>
+
+    <h3><a href='web-audio-band10.html'>Band10</a></h3>
+    <p>An example of a 10 band equalizer plus average volume meter.</p>
+
+    <h3><a href='web-audio-band31.html'>Band31</a></h3>
+    <p>An example of a 31 band equalizer plus average volume meter.</p>
+
+    <h3><a href='web-audio-flora-tone.html'>Flora tone pair</a></h3>
+    <p>Creates flocking agents that are attracted to both 1000hz and 2500Hz tones. Play a <a href='https://itunes.apple.com/us/app/tone-generator-pro/id396062821?mt=8'>tone generator</a> near your microphone to see the effect.</p>
+
+    <h3><a href='web-audio-flora-lightning.html'>Flora tone circle</a></h3>
+    <p>Creates flocking agents that are attracted to a range of tones. Play a <a href='https://itunes.apple.com/us/app/tone-generator-pro/id396062821?mt=8'>tone generator</a> to guide the agents around the browser.</p>
+
+    <h3>Docs</h3>
+    Check out <a href='doc/index.html'>the documentation</a> for more info.
+
+    <hr />
+
+    <img class='screenshot' src='images/band10.jpg'>
+
+    <small>
+    <p>Vince Allen</p>
+    <p>Brooklyn, NY</p>
+    <p><a href='http://www.vinceallen.com'>vince@vinceallen.com</a></p>
+    <p><a href='https://twitter.com/vinceallenvince'>@vinceallenvince</a></p>
+    <p>License: MIT</p>
+    </small>
+
+  </body>
+</html>
