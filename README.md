@@ -19,8 +19,6 @@ In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass t
 
 IMPORTANT: Your items must extend the BitShadowMachine.Item class.
 
-The following is taken from [public/simple.html](http://foldi.github.io/Bit-Shadow-Machine/simple.html).
-
 ```html
 <!DOCTYPE html>
 <html>
@@ -69,7 +67,8 @@ The following is taken from [public/simple.html](http://foldi.github.io/Bit-Shad
 
 Notice we're defining a Box class that extends BitShadowMachine.Item. The class must also have an init() method to set additional properties.
 
-Loading the above, you should see a gray box in the middle of the browser.
+Loading the above, you should see a gray box in the middle of the browser. View it at [public/simple.html](http://foldi.github.io/Bit-Shadow-Machine/simple.html).
+
 
 ## Animation
 
@@ -158,7 +157,7 @@ Let's make the box move.
 </html>
 ```
 
-The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. You can find the code at public/simple-anim.html.
+The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. View it at [public/simple-anim.html](http://foldi.github.io/Bit-Shadow-Machine/simple-anim.html).
 
 ## Multiple items
 
@@ -184,7 +183,7 @@ We're adding 500 items with random scale and random location. We've also inverse
 
 Press 's' on your keyboard. You should see a status menu appear in the top left that indicates the total number of objects and the current frame rate. You should see 501 items (the world counts as an item) and a frame rate close to 60 frames per second.
 
-You can find the code at public/simple-anim-items.html.
+View it at [public/simple-anim-items.html](http://foldi.github.io/Bit-Shadow-Machine/simple-anim-items.html).
 
 ## Blur
 
@@ -211,7 +210,7 @@ BitShadowMachine.System.init(function() {
 
 We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the items blur as they accelerate.
 
-Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps. You can find the code at public/simple-anim-blur.html.
+Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps. View it at [public/simple-anim-blur.html](http://foldi.github.io/Bit-Shadow-Machine/simple-anim-blur.html).
 
 Now step back and remember these animated items are all just CSS box shadows on the document body.
 
@@ -275,7 +274,7 @@ A Bit-Shadow world can be any element that has a box shadow. In the example belo
 
 Notice we also get a menu by default. To suppress the menu, pass 'noMenu: true' as an optional property when creating the world.
 
-You can find the code at public/simple-world.html.
+View it at [public/simple-world.html](http://foldi.github.io/Bit-Shadow-Machine/simple-world.html).
 
 ## Multple worlds
 
@@ -428,8 +427,7 @@ Bit-Shadow Machine can support multiple worlds. Just pass them as an array to th
 </html>
 ```
 
-You should see three Bit-Shadow worlds each with their own set of animated items. You can find the code at public/simple-world-multiple.html.
-
+You should see three Bit-Shadow worlds each with their own set of animated items. View it at [public/simple-world-multiple.html](http://foldi.github.io/Bit-Shadow-Machine/simple-world-multiple.html).
 
 Building this project
 ======
