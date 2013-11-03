@@ -28,25 +28,41 @@
     <h3>Examples</h3>
 
     <h3><a href='simple.html'>Simple</a></h3>
-    <p>To setup a simple Bit-Shadow Machine, reference BitShadowMachine.min.js and Modernizr.min.js from a script tag in the &lt;head&gt; of your document.</p>
-
-    <p>Also, reference the bitshadowmachine.css file.</p>
+    <p>To setup a simple Bit-Shadow Machine, reference BitShadowMachine.min.js and Modernizr.min.js from a script tag in the &lt;head&gt; of your document. Also, reference the bitshadowmachine.css file.</p>
 
     <p>In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass the system a function that adds items to the system.</p>
 
     <p>IMPORTANT: Your items must extend the BitShadowMachine.Item class.</p>
 
-    <h3><a href='web-audio-band10.html'>Band10</a></h3>
-    <p>An example of a 10 band equalizer plus average volume meter.</p>
+    <p>You should see a gray box in the middle of the browser.</p>
 
-    <h3><a href='web-audio-band31.html'>Band31</a></h3>
-    <p>An example of a 31 band equalizer plus average volume meter.</p>
+    <h3><a href='simple-anim.html'>Simple Anim</a></h3>
 
-    <h3><a href='web-audio-flora-tone.html'>Flora tone pair</a></h3>
-    <p>Creates flocking agents that are attracted to both 1000hz and 2500Hz tones. Play a <a href='https://itunes.apple.com/us/app/tone-generator-pro/id396062821?mt=8'>tone generator</a> near your microphone to see the effect.</p>
+    <p>The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box.</p>
 
-    <h3><a href='web-audio-flora-lightning.html'>Flora tone circle</a></h3>
-    <p>Creates flocking agents that are attracted to a range of tones. Play a <a href='https://itunes.apple.com/us/app/tone-generator-pro/id396062821?mt=8'>tone generator</a> to guide the agents around the browser.</p>
+    <h3><a href='simple-anim-items.html'>Simple Anim Items</a></h3>
+
+    <p>We're adding 500 items with random scale and random location. We've also inversely mapped scale and opacity so the largest items have the least opacity.</p>
+
+    <p>Press 's' on your keyboard. You should see a status menu appear in the top left that indicates the total number of objects and the current frame rate. You should see 501 items (the world counts as an item) and a frame rate close to 60 frames per second.</p>
+
+    <h3><a href='simple-anim-blur.html'>Simple Anim Blur</a></h3>
+
+    <p>We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the items blur as they accelerate.</p>
+
+    <p>Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps. You can find the code at public/simple-anim-blur.html.</p>
+
+    <h3><a href='simple-world.html'>Simple World</a></h3>
+
+    <p>A Bit-Shadow world can be any element that has a box shadow. In the example, we've placed a &lt;div&gt; in the body and passed in as the second argument to the System.init() method.</p>
+
+    <p>Notice we also get a menu by default. To suppress the menu, pass 'noMenu: true' as an optional property when creating the world.</p>
+
+    <h3><a href='simple-world-multiple.html'>Simple World Multiple</a></h3>
+
+    <p>Bit-Shadow Machine can support multiple worlds. Just pass them as an array to the second argument of System.init().</p>
+
+    <p>You should see three Bit-Shadow worlds each with their own set of animated items.</p>
 
     <h3>Docs</h3>
     Check out <a href='doc/index.html'>the documentation</a> for more info.
