@@ -19,7 +19,7 @@ In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass t
 
 IMPORTANT: Your items must extend the BitShadowMachine.Item class.
 
-The following is taken from public/simple.html.
+The following is taken from [public/simple.html](http://foldi.github.io/Bit-Shadow-Machine/simple.html).
 
 ```html
 <!DOCTYPE html>
