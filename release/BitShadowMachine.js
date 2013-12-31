@@ -1,4 +1,4 @@
-/*! BitShadowMachine v2.0.9 - 2013-12-31 03:12:34 
+/*! BitShadowMachine v2.0.9 - 2013-12-31 04:12:37 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -2033,9 +2033,9 @@ exports.Item = Item;
 function Anim(opt_options) {
   var options = opt_options || {};
   options.name = 'Anim';
-  BitShadowMachine.Item.call(this, options);
+  Item.call(this, options);
 }
-BitShadowMachine.Utils.extend(Anim, BitShadowMachine.Item);
+Utils.extend(Anim, Item);
 
 /**
  * Initializes the Anim.
@@ -2136,9 +2136,9 @@ exports.Anim = Anim;
 function AnimUnit(opt_options) {
   var options = opt_options || {};
   options.name = 'AnimUnit';
-  BitShadowMachine.Item.call(this, options);
+  Item.call(this, options);
 }
-BitShadowMachine.Utils.extend(AnimUnit, BitShadowMachine.Item);
+Utils.extend(AnimUnit, Item);
 
 /**
  * Initializes the AnimUnit.

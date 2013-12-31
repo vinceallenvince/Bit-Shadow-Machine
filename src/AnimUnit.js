@@ -10,9 +10,9 @@
 function AnimUnit(opt_options) {
   var options = opt_options || {};
   options.name = 'AnimUnit';
-  BitShadowMachine.Item.call(this, options);
+  Item.call(this, options);
 }
-BitShadowMachine.Utils.extend(AnimUnit, BitShadowMachine.Item);
+Utils.extend(AnimUnit, Item);
 
 /**
  * Initializes the AnimUnit.
