@@ -13,9 +13,9 @@
 function Anim(opt_options) {
   var options = opt_options || {};
   options.name = 'Anim';
-  BitShadowMachine.Item.call(this, options);
+  Item.call(this, options);
 }
-BitShadowMachine.Utils.extend(Anim, BitShadowMachine.Item);
+Utils.extend(Anim, Item);
 
 /**
  * Initializes the Anim.
