@@ -82,7 +82,9 @@ module.exports = function(grunt) {
           'src/ColorPalette.js',
           'src/System.js',
           'src/World.js',
-          'src/Item.js'
+          'src/Item.js',
+          'src/Anim.js',
+          'src/AnimUnit.js'
         ],
         dest: 'release/' + latest + '.js'
       }
@@ -105,7 +107,9 @@ module.exports = function(grunt) {
           'src/ColorPalette.js',
           'src/System.js',
           'src/World.js',
-          'src/Item.js'
+          'src/Item.js',
+          'src/Anim.js',
+          'src/AnimUnit.js'          
         ],
         dest: 'release/' + latest + '.min.js'
       }

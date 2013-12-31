@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: raf.js</title>
+    <title>JSDoc: Source: AnimUnit.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: raf.js</h1>
+    <h1 class="page-title">Source: AnimUnit.js</h1>
     
     
 
@@ -25,25 +25,41 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>/*global window */
-/**
- * RequestAnimationFrame shim layer with setTimeout fallback
- * @param {function} callback The function to call.
- * @returns {function|Object} An animation frame or a timeout object.
+            <pre class="prettyprint source"><code>/**
+ * Creates a new AnimUnit.
+ *
+ * An AnimUnit occupies a location in an animation frame. Typically,
+ * called from Anim and passed a location, scale and color.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @constructor
  */
-window.requestAnimFrame = (function(callback){
+function AnimUnit(opt_options) {
+  var options = opt_options || {};
+  options.name = 'AnimUnit';
+  BitShadowMachine.Item.call(this, options);
+}
+BitShadowMachine.Utils.extend(AnimUnit, BitShadowMachine.Item);
 
-  'use strict';
+/**
+ * Initializes the AnimUnit.
+ * @param {Object} options Initial options.
+ */
+AnimUnit.prototype.init = function(options) {
+  if (!options.location) {
+    throw new Error('AnimUnit.init: location required.');
+  }
+  this.location = options.location;
+  this.scale = options.scale || 1;
+  this.color = options.color || [100, 100, 100];
+  this.currentFrame = 0;
+};
 
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          window.oRequestAnimationFrame      ||
-          window.msRequestAnimationFrame     ||
-          function(callback) {
-            window.setTimeout(callback, 1000 / 60);
-          };
-})();</code></pre>
+/**
+ * Updates properties.
+ */
+AnimUnit.prototype.step = function() {};
+</code></pre>
         </article>
     </section>
 
