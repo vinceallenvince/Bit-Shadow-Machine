@@ -67,13 +67,6 @@ Anim.prototype.step = function() {
     this.advanceFrame();
     this.frameCount = 0;
   }
-
-  this.frameDuration = BitShadowMachine.Utils.map(BitShadowMachine.System.mouse.location.y,
-      0, this.world.height, 5, 0);
-
-  this.wind.x = BitShadowMachine.Utils.map(BitShadowMachine.System.mouse.location.y,
-      0, this.world.height, -1, -5);
-
 };
 
 /*
