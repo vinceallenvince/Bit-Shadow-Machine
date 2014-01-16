@@ -88,9 +88,9 @@ function World(opt_el, opt_options) {
       container.appendChild(this.menu);
       this.menuHidden = false;
     }
-
+    
     document.body.appendChild(container);
-
+    
   }
 
   /**
