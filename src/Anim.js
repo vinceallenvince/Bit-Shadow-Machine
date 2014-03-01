@@ -52,7 +52,7 @@ Anim.prototype.init = function(options) {
   this.loop = options.loop !== 'undefined' ? true : options.loop;
 
   this.frameDuration = options.frameDuration || 3;
-  
+
   /**
    * The internal frame count that is checked against
    * frameDuration to see if we should advance the frame.
@@ -87,7 +87,9 @@ Anim.prototype.advanceFrame = function() {
   animUnits = BitShadowMachine.System.getAllItemsByName('AnimUnit');
 
   for (i = 0, max = animUnits.length; i < max; i++) {
-    BitShadowMachine.System.destroyItem(animUnits[i]);
+    if (animUnits[i].parentId === this.id) {
+      BitShadowMachine.System.destroyItem(animUnits[i]);
+    }
   }
 
   // create new anim pixels
@@ -99,7 +101,8 @@ Anim.prototype.advanceFrame = function() {
         location: new BitShadowMachine.Vector(this.location.x + item.x, this.location.y + item.y),
         color: item.color,
         scale: 1,
-        opacity: item.opacity
+        opacity: item.opacity,
+        parentId: this.id
       });
     }
   }
