@@ -158,6 +158,12 @@ System.recordWorldProperties = {
 System.recordedData = [];
 
 /**
+ * Set to 1 to sort System._records.list by zIndex.
+ * @type Number
+ */
+System.zSort = 0;
+
+/**
  * Initializes the system and starts the update loop.
  *
  * @function init
@@ -495,6 +501,9 @@ System._update = function() {
   }
 
   // draw
+  if (System.zSort) {
+    records = records.sort(function(a,b){return (a.zIndex - b.zIndex);});
+  }
 
   // loop thru records and build box shadows
   for (i = records.length - 1; i >= 0; i -= 1) {
@@ -1026,7 +1035,7 @@ System._recordMouseLoc = function(e) {
 };
 
 /**
- * Handles orientation evenst and forces the world to update its bounds.
+ * Handles orientation events and forces the world to update its bounds.
  *
  * @function updateOrientation
  * @memberof System

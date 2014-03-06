@@ -25,10 +25,17 @@ AnimUnit.prototype.init = function(options) {
   this.location = options.location;
   this.scale = options.scale || 1;
   this.color = options.color || [100, 100, 100];
+  this.zIndex = options.zIndex || 1; // the default value must be > 0
   this.currentFrame = 0;
 };
 
 /**
- * Updates properties.
+ * Checks if parent Anim is advancing the frame. If so,
+ * this object destoys itself.
  */
-AnimUnit.prototype.step = function() {};
+AnimUnit.prototype.step = function() {
+  var parent = System.getItem(this.parentId);
+  if (parent._frameCount >= parent.frameDuration) {
+    BitShadowMachine.System.destroyItem(this);
+  }
+};

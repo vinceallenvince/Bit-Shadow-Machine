@@ -22,6 +22,7 @@ Utils.extend(Anim, Item);
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.scale = 0] Scale. Set to a higher value for debugging.
  * @param {Array} [opt_options.color = [0, 0, 0]] Color. Set color for debugging if scale > 0.
+ * @param {number} [opt_options.zIndex = 0] zIndex. Set to a higher value to place this pixel on a higher layer.
  * @param {Object} [opt_options.location = new Vector] Location.
  * @param {Array} [opt_options.frames = []] The frames to animate.
  * @param {number} [opt_options.currentFrame = 0] The current animation frame.
@@ -44,7 +45,6 @@ Anim.prototype.init = function(options) {
    */
   this.scale = options.scale || 0;
   this.color = options.color || [0, 0, 0];
-
   this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
 
   this.frames = options.frames || [];
@@ -54,11 +54,21 @@ Anim.prototype.init = function(options) {
   this.frameDuration = options.frameDuration || 3;
 
   /**
+   * Anim instances must be stored in System._records.list at a lower index
+   * than their associated AnimUnit instance. If System.zSorted = true,
+   * we sort System._records.list by zIndex. Since Anim instances are
+   * invisible (while their AnimUnits are rendered), we can force a negative
+   * zIndex and keep them at the bottom of System._records.list.
+   */
+  this.zIndex = -options.zIndex || -1;
+
+  /**
    * The internal frame count that is checked against
    * frameDuration to see if we should advance the frame.
    * @private
    */
   this._frameCount = 0;
+
 };
 
 
@@ -83,15 +93,6 @@ Anim.prototype.advanceFrame = function() {
 
   var i, max, animUnits, item, frame;
 
-  // destroy all anim pixels
-  animUnits = BitShadowMachine.System.getAllItemsByName('AnimUnit');
-
-  for (i = 0, max = animUnits.length; i < max; i++) {
-    if (animUnits[i].parentId === this.id) {
-      BitShadowMachine.System.destroyItem(animUnits[i]);
-    }
-  }
-
   // create new anim pixels
   if (this.frames.length) {
     frame = this.frames[this.currentFrame];
@@ -102,8 +103,9 @@ Anim.prototype.advanceFrame = function() {
         color: item.color,
         scale: 1,
         opacity: item.opacity,
-        parentId: this.id
-      });
+        parentId: this.id,
+        zIndex: -this.zIndex // reverse the zIndex value so the intended value is passed to the AnimUnit
+      }, this.world);
     }
   }
 
