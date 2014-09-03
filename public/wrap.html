@@ -10,31 +10,26 @@
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var rand = BitShadowMachine.Utils.getRandomNumber;
-
       BitShadowMachine.System.setup(function() {
 
         var world = this.add('World', {
-          width: 360,
-          height: 540,
+          width: 800,
+          height: 600,
           resolution: 4,
           el: document.getElementById('worldA'),
-          color: [0, 0, 0],
-          gravity: new BitShadowMachine.Vector(0, 0.1),
+          color: [100, 100, 0],
+          gravity: new BitShadowMachine.Vector(1, 0),
           c: 0
         });
 
-        for (var i = 0; i < 1000; i++) {
-          var color = rand(30, 200);
-          var item = this.add('Item', {
-            location: new BitShadowMachine.Vector(rand(0, world.width, true), rand(0, world.height, true)),
-            scale: rand(1, 3, true),
-            color: [color, color, color]
-          });
-        }
+        this.add('Item', {
+          checkWorldEdges: false,
+          wrapWorldEdges: true,
+          controlCamera: true
+        });
+
       });
       BitShadowMachine.System.loop();
-
     </script>
   </body>
 </html>

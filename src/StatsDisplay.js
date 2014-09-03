@@ -1,4 +1,5 @@
 /*global document, window */
+
 /**
  * Creates a new StatsDisplay object.
  *
@@ -13,171 +14,157 @@
  *
  * @constructor
  */
-function StatsDisplay() {
+function StatsDisplay() {}
 
-  var labelContainer, label;
+/**
+ * Name
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay.name = 'StatsDisplay';
 
-  this.name = 'StatsDisplay';
+/**
+ * Set to false to stop requesting animation frames.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay.active = false;
 
-  /**
-   * Set to false to stop requesting animation frames.
-   * @private
-   */
-  this._active = true;
+/**
+ * Frames per second.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay.fps = false;
 
-  /**
-   * Frames per second.
-   * @private
-   */
-  this._fps = 0;
+/**
+ * The current time.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._time = Date.now();
 
-  /**
-   * The current time.
-   * @private
-   */
-  if (Date.now) {
-    this._time = Date.now();
-  } else {
-    this._time = 0;
-  }
+/**
+ * The time at the last frame.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._timeLastFrame = StatsDisplay._time;
 
-  /**
-   * The time at the last frame.
-   * @private
-   */
-  this._timeLastFrame = this._time;
+/**
+ * The time the last second was sampled.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._timeLastSecond = StatsDisplay._time;
 
-  /**
-   * The time the last second was sampled.
-   * @private
-   */
-  this._timeLastSecond = this._time;
+/**
+ * Holds the total number of frames
+ * between seconds.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._frameCount = 0;
 
-  /**
-   * Holds the total number of frames
-   * between seconds.
-   * @private
-   */
-  this._frameCount = 0;
+/**
+ * Initializes the StatsDisplay.
+ * @function update
+ * @memberof StatsDisplay
+ */
+StatsDisplay.init = function() {
+
+  StatsDisplay.active = true;
 
   /**
    * A reference to the DOM element containing the display.
    * @private
    */
-  this.el = document.createElement('div');
-  this.el.id = 'statsDisplay';
-  this.el.className = 'statsDisplay';
-  this.el.style.backgroundColor = 'black';
-  this.el.style.color = 'white';
-  this.el.style.fontFamily = 'Helvetica';
-  this.el.style.padding = '0.5em';
-  this.el.style.opacity = '0.5';
-  this.el.style.position = 'absolute';
-  this.el.style.left = '0';
-  this.el.style.top = '0';
-  this.el.style.width = '220px';
+  StatsDisplay.el = document.createElement('div');
+  StatsDisplay.el.id = 'statsDisplay';
+  StatsDisplay.el.className = 'statsDisplay';
+  StatsDisplay.el.style.backgroundColor = 'black';
+  StatsDisplay.el.style.color = 'white';
+  StatsDisplay.el.style.fontFamily = 'Helvetica';
+  StatsDisplay.el.style.padding = '0.5em';
+  StatsDisplay.el.style.opacity = '0.5';
 
-  /**
-   * A reference to the textNode displaying the total number of elements.
-   * @private
-   */
-  this._totalElementsValue = null;
-
-  /**
-   * A reference to the textNode displaying the frame per second.
-   * @private
-   */
-  this._fpsValue = null;
 
   // create totol elements label
-  labelContainer = document.createElement('span');
+  var labelContainer = document.createElement('span');
   labelContainer.className = 'statsDisplayLabel';
   labelContainer.style.marginLeft = '0.5em';
   label = document.createTextNode('total elements: ');
   labelContainer.appendChild(label);
-  this.el.appendChild(labelContainer);
+  StatsDisplay.el.appendChild(labelContainer);
 
   // create textNode for totalElements
-  this._totalElementsValue = document.createTextNode('0');
-  this.el.appendChild(this._totalElementsValue);
+  StatsDisplay.totalElementsValue = document.createTextNode('0');
+  StatsDisplay.el.appendChild(StatsDisplay.totalElementsValue);
 
   // create fps label
   labelContainer = document.createElement('span');
   labelContainer.className = 'statsDisplayLabel';
   labelContainer.style.marginLeft = '0.5em';
-  label = document.createTextNode('fps: ');
+  var label = document.createTextNode('fps: ');
   labelContainer.appendChild(label);
-  this.el.appendChild(labelContainer);
+  StatsDisplay.el.appendChild(labelContainer);
 
   // create textNode for fps
-  this._fpsValue = document.createTextNode('0');
-  this.el.appendChild(this._fpsValue);
+  StatsDisplay.fpsValue = document.createTextNode('0');
+  StatsDisplay.el.appendChild(StatsDisplay.fpsValue);
 
-  document.body.appendChild(this.el);
+  document.body.appendChild(StatsDisplay.el);
 
-  /**
-   * Initiates the requestAnimFrame() loop.
-   */
-  this._update(this);
-}
-
-/**
- * Returns the current frames per second value.
- * @returns {number} Frame per second.
- */
-StatsDisplay.prototype.getFPS = function() {
-  return this._fps;
 };
 
 /**
  * If 1000ms have elapsed since the last evaluated second,
- * _fps is assigned the total number of frames rendered and
+ * fps is assigned the total number of frames rendered and
  * its corresponding textNode is updated. The total number of
  * elements is also updated.
  *
- * This function is called again via requestAnimFrame().
- *
- * @private
+ * @function update
+ * @memberof StatsDisplay
+ * @param {Number} [opt_totalItems] The total items in the system.
  */
-StatsDisplay.prototype._update = function(me) {
+StatsDisplay.update = function(opt_totalItems) {
 
-  var elementCount = exports.System.count();
+  var sd = StatsDisplay,
+      totalItems = opt_totalItems || 0;
 
-  if (Date.now) {
-    me._time = Date.now();
-  } else {
-    me._time = 0;
-  }
-  me._frameCount++;
+  sd._time = Date.now();
+  sd._frameCount++;
 
   // at least a second has passed
-  if (me._time > me._timeLastSecond + 1000) {
+  if (sd._time > sd._timeLastSecond + 1000) {
 
-    me._fps = me._frameCount;
-    me._timeLastSecond = me._time;
-    me._frameCount = 0;
+    sd.fps = sd._frameCount;
+    sd._timeLastSecond = sd._time;
+    sd._frameCount = 0;
 
-    me._fpsValue.nodeValue = me._fps;
-    me._totalElementsValue.nodeValue = elementCount;
-  }
-
-  var reqAnimFrame = (function (me) {
-    return (function() {
-      me._update(me);
-    });
-  })(this);
-
-  if (this._active) {
-    window.requestAnimFrame(reqAnimFrame);
+    sd.fpsValue.nodeValue = sd.fps;
+    sd.totalElementsValue.nodeValue = totalItems;
   }
 };
 
 /**
- * Removes statsDisplay from DOM.
+ * Hides statsDisplay from DOM.
+ * @function hide
+ * @memberof StatsDisplay
  */
-StatsDisplay.prototype.destroy = function() {
-  this._active = false;
-  if (document.getElementById(this.el.id)) {
-    document.body.removeChild(this.el);
-  }
+StatsDisplay.hide = function() {
+  var sd = document.getElementById(StatsDisplay.el.id);
+  sd.style.display = 'none';
 };
+
+/**
+ * Shows statsDisplay from DOM.
+ * @function show
+ * @memberof StatsDisplay
+ */
+StatsDisplay.show = function() {
+  var sd = document.getElementById(StatsDisplay.el.id);
+  sd.style.display = 'block';
+};
+
+module.exports = StatsDisplay;

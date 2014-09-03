@@ -5,36 +5,41 @@
   <title>Bit-Shadow Machine</title>
   <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" />
   <script src="scripts/bitshadowmachine.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/walker.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/agent.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var rand = BitShadowMachine.Utils.getRandomNumber;
+      BitShadowMachine.System.Classes = {
+        Walker: Walker
+      }
 
       BitShadowMachine.System.setup(function() {
 
         var world = this.add('World', {
-          width: 360,
-          height: 540,
-          resolution: 4,
+          width: 800,
+          height: 600,
+          resolution: 1,
           el: document.getElementById('worldA'),
           color: [0, 0, 0],
-          gravity: new BitShadowMachine.Vector(0, 0.1),
+          gravity: new BitShadowMachine.Vector(0, 0),
           c: 0
         });
 
-        for (var i = 0; i < 1000; i++) {
-          var color = rand(30, 200);
-          var item = this.add('Item', {
-            location: new BitShadowMachine.Vector(rand(0, world.width, true), rand(0, world.height, true)),
-            scale: rand(1, 3, true),
-            color: [color, color, color]
+        for (var i = 0; i < 600; i++) {
+          var walker = this.add('Walker', {
+            perlin: false,
+            maxSpeed: 1,
+            perlinSpeed: 0.00001,
+            checkWorldEdges: false,
+            wrapWorldEdges: true
           });
         }
+
       });
       BitShadowMachine.System.loop();
-
     </script>
   </body>
 </html>

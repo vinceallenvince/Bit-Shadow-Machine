@@ -1,5 +1,5 @@
 {
-  "name": "BitShadowMachine",
+  "name": "bitshadowmachine",
   "version": "2.0.13",
   "description": "Bit-Shadow-Machine renders particles in a web browser using CSS box shadows.",
   "main": "src/main.js",
@@ -15,17 +15,28 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "browserify": "^4.1.10",
+    "coverify": "^1.0.7",
     "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-clean": "~0.6.0",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.5.1",
-    "grunt-contrib-jasmine": "~0.5.1",
     "grunt-contrib-csslint": "~0.1.2",
     "grunt-contrib-cssmin": "~0.6.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-exec": "~0.4.6",
+    "grunt-jsdoc": "~0.4.0",
     "grunt-plato": "~0.2.1",
-    "leapjs": "0.2.0",
-    "grunt-jsdoc": "~0.4.0"
+    "phantomjs": "^1.9.7-8",
+    "tap": "^0.4.11",
+    "tape": "^2.13.3",
+    "testling": "^1.6.1"
+  },
+  "dependencies": {
+    "burner": "^3.1.0",
+    "drawing-utils-lib": "~0.1.4",
+    "vector2d-lib": "0.0.12",
+    "quietriot": "~0.1.2",
+    "fpsdisplay": "~0.1.2"
   }
 }

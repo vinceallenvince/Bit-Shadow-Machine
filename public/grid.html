@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/bitshadowmachine.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      BitShadowMachine.System.setup(function() {
+
+        var world = this.add('World', {
+          width: 800,
+          height: 600,
+          resolution: 16,
+          el: document.getElementById('worldA'),
+          color: [100, 100, 0],
+          gravity: new BitShadowMachine.Vector(0, 0),
+          c: 0
+        });
+
+        for (var i = 0; i < world.width / 2; i++) {
+          for (var j = 0; j < world.height / 2; j++) {
+            this.add('Item', {
+              location: new BitShadowMachine.Vector(1 + (i * 2), 1 + (j * 2)),
+              color: (i + j) % 2 === 0 ? [200, 200, 200] : [200, 100, 0]
+            });
+          }
+        }
+
+        //
+
+        for (var i = 0; i < world.width; i++) {
+          var d = document.createElement('div');
+          d.style.cssText = 'position: absolute; top: 0; left: ' + (i * world.resolution * 0.5) + 'px; width: ' + (i * world.resolution * 0.5) + 'px; height: 600px; border-right-width: 1px; border-right-color: rgb(50, 50, 50); border-right-style: solid;';
+
+          var container = document.getElementById('container_world');
+          container.appendChild(d);
+        }
+
+        for (var i = 0; i < world.height; i++) {
+          var d = document.createElement('div');
+          d.style.cssText = 'position: absolute; left: 0; top: ' + (i * world.resolution * 0.5) + 'px; height: ' + (i * world.resolution * 0.5) + 'px; width: 800px; border-bottom-width: 1px; border-bottom-color: rgb(50, 50, 50); border-bottom-style: solid;';
+
+          var container = document.getElementById('container_world');
+          container.appendChild(d);
+        }
+
+      });
+      BitShadowMachine.System.loop();
+    </script>
+  </body>
+</html>
