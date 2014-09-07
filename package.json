@@ -4,7 +4,7 @@
   "description": "Bit-Shadow-Machine renders particles in a web browser using CSS box shadows.",
   "main": "src/main.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "browserify test/*.js | testling"
   },
   "repository": "",
   "author": {
@@ -37,6 +37,6 @@
     "drawing-utils-lib": "~0.1.4",
     "vector2d-lib": "0.0.12",
     "quietriot": "~0.1.2",
-    "fpsdisplay": "~0.1.2"
+    "fpsdisplay": "~0.1.3"
   }
 }
