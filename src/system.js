@@ -12,15 +12,6 @@ System.Classes = {
 };
 
 /**
- * Stores references to all worlds in the system.
- * @private
- */
-System._worlds = {
-  list: [],
-  lookup: {}
-};
-
-/**
  * Stores references to all buffers in the system.
  * @private
  */
@@ -113,7 +104,7 @@ System.recordedData = [];
  * @return {Array.<Buffer>} An array of worlds.
  */
 System.getAllWorlds = function() {
-  return System._worlds.list;
+  return System.getAllItemsByName('World');
 };
 
 /**
@@ -208,12 +199,6 @@ System.loop = function() {
 
       if (records[i] instanceof World) {
         System._buffers[records[i].id] = '';
-
-        if (!System._worlds.lookup[records[i].id]) {
-          var l = System._worlds.list.push(records[i]);
-          System._worlds.lookup[records[i].id] = System._worlds.list[l - 1];
-        }
-
       }
 
       records[i].step();
@@ -264,7 +249,7 @@ System.loop = function() {
     style.borderRadius = world.borderRadius + '%';
   }
 
-// check to call frame complete callback.
+  // check to call frame complete callback.
   if (System.totalFrames > -1 && System._checkRecordFrame()) {
     System.frameCompleteCallback(System.clock, System.recordedData[0]);
     System.recordedData = null;
