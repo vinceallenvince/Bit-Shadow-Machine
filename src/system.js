@@ -171,7 +171,7 @@ System.loop = function() {
       shadows = '';
 
   // check if we've exceeded totalFrames
-  if (System.checkFramesSaved()) { // TODO: test this
+  if (System.checkFramesSaved()) {
     return;
   }
 
@@ -186,7 +186,7 @@ System.loop = function() {
 
     if (record && record.step && !record.world.pauseStep) {
 
-      if (record.life < record.lifespan) { // TODO: test this
+      if (record.life < record.lifespan) {
         record.life += 1;
       } else if (record.lifespan !== -1) {
         System.remove(record);
@@ -208,7 +208,7 @@ System.loop = function() {
     }
   }
 
-  if (System.zSort) { // TODO: test this
+  if (System.zSort) {
     records = records.sort(function(a,b){return (a.zIndex - b.zIndex);});
   }
 
@@ -221,7 +221,7 @@ System.loop = function() {
 
       shadows = buffers[record.world.id];
 
-      if (record.world.colorMode === 'rgb' && record.color) {
+      if (record.world.colorMode === 'rgb' && record.color) {  // TODO: test this
         shadows = shadows + System._buildStringRGBA(record);
       } else if (record.world.colorMode === 'hsl' && typeof record.hue !== 'undefined' &&
           typeof record.saturation !== 'undefined' && typeof record.lightness !== 'undefined') {

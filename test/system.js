@@ -1,5 +1,6 @@
 var test = require('tape');
 var Item = require('../src/item');
+var Vector = require('vector2d-lib');
 var System, obj;
 
 function beforeTest() {
@@ -161,8 +162,10 @@ test('checkFramesSaved() should check total recorded frames.', function(t) {
   System.loop();
 
   var framesRecorded = System.checkFramesSaved();
-
   t.equal(framesRecorded, true, 'returns true if all frames recorded.');
+
+  System.loop();
+  t.equal(System.clock, 6, 'exits loop if System.checkFramesSaved() returns true.');
 
   t.end();
 });
@@ -369,6 +372,77 @@ test('add() should pull from pull from System._pool if pooled items exist.', fun
     t.assert(System._records.length === 2 && System._pool.length === 2, 'add() should check to splice items off _pool.');
 
   });
+
+  t.end();
+});
+
+test('loop() should increment item life property.', function(t) {
+
+  window.requestAnimationFrame = function() {};
+
+  beforeTest();
+
+  System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    this.add('Item', {
+      location: new Vector(100, 100),
+      lifespan: 10
+    });
+  });
+  System.loop();
+  t.equal(System._records[System._records.length - 1].life, 1, 'step() should increment life.');
+  t.equal(System.clock, 1, 'loop() should increment clock.');
+
+  //
+  //
+
+  beforeTest();
+
+  System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    this.add('Item', {
+      location: new Vector(100, 100),
+      life: 10,
+      lifespan: 10
+    });
+  });
+  System.loop();
+  t.equal(System._records.length, 1, 'step() should remove object if life >= lifespan.');
+
+  t.end();
+});
+
+test('System.zSort = true should sort _records by zIndex value.', function(t) {
+
+  beforeTest();
+  System.zSort = true;
+  System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    var itemA = this.add('Item', {
+      zIndex: 3
+    });
+    var itemB = this.add('Item', {
+      zIndex: 2
+    });
+    var itemC = this.add('Item', {
+      zIndex: 1
+    });
+  });
+
+  System.loop();
+  t.equal(System._records[1].zIndex, 1, 'Item with lowest zIndex value is at the beginning of the records array.');
 
   t.end();
 });
