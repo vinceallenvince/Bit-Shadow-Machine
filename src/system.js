@@ -25,30 +25,30 @@ System._buffers = {};
 System.zSort = 0;
 
 /**
- * Set to true to save properties defined in System.recordItemProperties from
+ * Set to true to save properties defined in System.saveItemProperties from
  * each object in each frame.
  * @type boolean
  */
-System.recordData = false;
+System.saveData = false;
 
 /**
  * Recording starts with this frame number.
  * @type number
  */
-System.recordStartFrame = -1;
+System.saveStartFrame = -1;
 
 /**
  * Recording ends with this frame number.
  * @type number
  */
-System.recordEndFrame = -1;
+System.saveEndFrame = -1;
 
 /**
- * Defines the properties to save in System.recordedData for each item
+ * Defines the properties to save in System.data for each item
  * in each frame.
  * @type Object
  */
-System.recordItemProperties = {
+System.saveItemProperties = {
   id: true,
   name: true,
   scale: true,
@@ -65,11 +65,11 @@ System.recordItemProperties = {
 };
 
 /**
- * Defines the properties to save in System.recordedData for each world
+ * Defines the properties to save in System.data for each world
  * in each frame.
  * @type Object
  */
-System.recordWorldProperties = {
+System.saveWorldProperties = {
   id: true,
   name: true,
   width: true,
@@ -93,7 +93,7 @@ System.recordWorldProperties = {
     }
  ]
  */
-System.recordedData = null;
+System.data = null;
 
 /**
  * Returns all worlds.
@@ -171,13 +171,13 @@ System.loop = function() {
       shadows = '';
 
   // check if we've exceeded totalFrames
-  if (System.checkFramesRecorded()) {
+  if (System.checkFramesSaved()) { // TODO: test this
     return;
   }
 
-  // setup entry in System.recordedData
-  if (System.recordData) {
-    System.recordedData = System._resetRecordedData();
+  // setup entry in System.data
+  if (System.saveData) {
+    System.data = System._resetData();
   }
 
   for (i = len - 1; i >= 0; i -= 1) {
@@ -186,7 +186,7 @@ System.loop = function() {
 
     if (record && record.step && !record.world.pauseStep) {
 
-      if (record.life < record.lifespan) {
+      if (record.life < record.lifespan) { // TODO: test this
         record.life += 1;
       } else if (record.lifespan !== -1) {
         System.remove(record);
@@ -199,16 +199,16 @@ System.loop = function() {
 
       record.step();
 
-      if (System.recordData && record.name !== 'World' && record.opacity) { // we don't want to record World data as Item
-        if (!System._checkRecordFrame()) {
+      if (System.saveData && record.name !== 'World' && record.opacity) { // we don't want to record World data as Item
+        if (!System._checkSaveFrame()) {
           continue;
         }
-        System._saveData(System.recordedData.items.length, record);
+        System._saveItemProperties(System.data.items.length, record);
       }
     }
   }
 
-  if (System.zSort) {
+  if (System.zSort) { // TODO: test this
     records = records.sort(function(a,b){return (a.zIndex - b.zIndex);});
   }
 
@@ -244,11 +244,11 @@ System.loop = function() {
   }
 
   // check to call frame complete callback.
-  if (System.recordData) {
-    System.saveFrameDataComplete(System.clock, System.recordedData);
+  if (System.saveData) {
+    System.saveDataComplete(System.clock, System.data);
   }
   System.clock++;
-  if (FPSDisplay.active) {
+  if (FPSDisplay.active) { // TODO: test this
     FPSDisplay.update(len);
   }
   if (typeof window.requestAnimationFrame !== 'undefined') {
@@ -263,15 +263,15 @@ System.loop = function() {
  * @param {Object} data The data saved from the current frame.
  * @throws {Object} If not overridden.
  */
-System.saveFrameDataComplete = function(frameNumber, data) {
-  throw new Error('System.saveFrameDataComplete not implemented. Override this function.');
+System.saveDataComplete = function(frameNumber, data) {
+  throw new Error('System.saveDataComplete not implemented. Override this function.');
 };
 
 /**
- * Called if recordEndFrame - recordStartFrame exceeds System.clock.
+ * Called if saveEndFrame - saveStartFrame exceeds System.clock.
  */
 System.totalFramesCallback = function() {
-  var totalFrames = System.recordEndFrame - System.recordStartFrame;
+  var totalFrames = System.saveEndFrame - System.saveStartFrame;
   console.log('Rendered ' + totalFrames + ' frames.');
 };
 
@@ -279,9 +279,9 @@ System.totalFramesCallback = function() {
  * Checks if the System recorded the total number of frames.
  * @return {[type]} [description]
  */
-System.checkFramesRecorded = function() {
-  var totalFrames = System.recordEndFrame - System.recordStartFrame;
-  if (totalFrames > 0 && System.clock >= System.recordEndFrame) {
+System.checkFramesSaved = function() {
+  var totalFrames = System.saveEndFrame - System.saveStartFrame;
+  if (totalFrames > 0 && System.clock >= System.saveEndFrame) {
     System.totalFramesCallback();
     return true;
   }
@@ -291,16 +291,16 @@ System.checkFramesRecorded = function() {
  * Checks if System.clock is within bounds.
  * @returns {Boolean} True if frame should be recorded.
  */
-System._checkRecordFrame = function() {
-  if (System.clock >= System.recordStartFrame && System.clock <= System.recordEndFrame) {
+System._checkSaveFrame = function() {
+  if (System.clock >= System.saveStartFrame && System.clock <= System.saveEndFrame) {
     return true;
   }
 };
 
 /**
- * Resets System.recordedData.
+ * Resets System.data.
  */
-System._resetRecordedData = function() {
+System._resetData = function() {
   return {
     frame: System.clock,
     world: {},
@@ -310,14 +310,14 @@ System._resetRecordedData = function() {
 
 /**
  * Saves properties of the passed record that match properties
- * defined in System.recordItemProperties.
+ * defined in System.saveItemProperties.
  * @param {number} index The array index for this object.
  * @param {Object} record An Item instance.
  */
-System._saveData = function(index, record) {
+System._saveItemProperties = function(index, record) {
 
   for (var i in record) {
-    if (record.hasOwnProperty(i) && System.recordItemProperties[i]) {
+    if (record.hasOwnProperty(i) && System.saveItemProperties[i]) {
       var val = record[i];
       if (val instanceof Vector) { // we want to copy the scalar values out of the Vector
         val = {
@@ -328,17 +328,17 @@ System._saveData = function(index, record) {
       if (typeof val === 'number') {
         val = parseFloat(val.toFixed(2), 10);
       }
-      var frame = System.recordedData;
+      var frame = System.data;
       var item = frame.items[index];
       if (typeof item !== 'object') {
         frame.items[index] = {};
       }
       frame.items[index][i] = val;
     }
-    if (!System.recordedData.world.id) {
+    if (!System.data.world.id) {
       for (var j in record.world) {
-        if (record.world.hasOwnProperty(j) && System.recordWorldProperties[j]) {
-          System.recordedData.world[j] = record.world[j];
+        if (record.world.hasOwnProperty(j) && System.saveWorldProperties[j]) {
+          System.data.world[j] = record.world[j];
         }
       }
     }

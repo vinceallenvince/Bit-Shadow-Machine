@@ -13,10 +13,10 @@ function beforeTest() {
   };
   System._buffers = {};
   System.zSort = 0;
-  System.recordData = false;
-  System.recordStartFrame = -1;
-  System.recordEndFrame = -1;
-  System.recordItemProperties = {
+  System.saveData = false;
+  System.saveStartFrame = -1;
+  System.saveEndFrame = -1;
+  System.saveItemProperties = {
     id: true,
     name: true,
     scale: true,
@@ -31,7 +31,7 @@ function beforeTest() {
     color: true,
     opacity: true
   };
-  System.recordWorldProperties = {
+  System.saveWorldProperties = {
     id: true,
     name: true,
     width: true,
@@ -39,10 +39,10 @@ function beforeTest() {
     resolution: true,
     colorMode: true
   };
-  System.recordedData = null;
+  System.data = null;
 
-  System.saveFrameDataComplete = function(frameNumber, data) {
-    throw new Error('System.saveFrameDataComplete not implemented. Override this function.');
+  System.saveDataComplete = function(frameNumber, data) {
+    throw new Error('System.saveDataComplete not implemented. Override this function.');
   };
 
   document.body.innerHTML = '';
@@ -65,12 +65,12 @@ test('check static properties.', function(t) {
   t.equal(typeof System.Classes, 'object', 'has a Classes object.');
   t.equal(typeof System._buffers, 'object', 'has a _buffers object.');
   t.equal(typeof System.zSort, 'number', 'has a zSort property.');
-  t.equal(typeof System.recordData, 'boolean', 'has a recordData property.');
-  t.equal(typeof System.recordStartFrame, 'number', 'has a recordStartFrame property.');
-  t.equal(typeof System.recordEndFrame, 'number', 'has a recordStartFrame property.');
-  t.equal(typeof System.recordItemProperties, 'object', 'has a recordItemProperties object.');
-  t.equal(typeof System.recordWorldProperties, 'object', 'has a recordWorldProperties object.');
-  t.equal(typeof System.recordedData, 'object', 'has a recordedData array.');
+  t.equal(typeof System.saveData, 'boolean', 'has a saveData property.');
+  t.equal(typeof System.saveStartFrame, 'number', 'has a saveStartFrame property.');
+  t.equal(typeof System.saveEndFrame, 'number', 'has a saveStartFrame property.');
+  t.equal(typeof System.saveItemProperties, 'object', 'has a saveItemProperties object.');
+  t.equal(typeof System.saveWorldProperties, 'object', 'has a saveWorldProperties object.');
+  t.equal(typeof System.data, 'object', 'has a data object.');
   t.end();
 });
 
@@ -137,7 +137,7 @@ test('getAllBuffers() should return all buffers.', function(t) {
   t.end();
 });
 
-test('checkFramesRecorded() should check total recorded frames.', function(t) {
+test('checkFramesSaved() should check total recorded frames.', function(t) {
 
   beforeTest();
 
@@ -149,10 +149,10 @@ test('checkFramesRecorded() should check total recorded frames.', function(t) {
     });
     var item = this.add('Item');
   });
-  System.saveFrameDataComplete = function(num, data) { console.log('frame number: ' + num); };
-  System.recordData = true;
-  System.recordStartFrame = 2;
-  System.recordEndFrame = 6;
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
+  System.saveStartFrame = 2;
+  System.saveEndFrame = 6;
   System.loop();
   System.loop();
   System.loop();
@@ -160,14 +160,14 @@ test('checkFramesRecorded() should check total recorded frames.', function(t) {
   System.loop();
   System.loop();
 
-  var framesRecorded = System.checkFramesRecorded();
+  var framesRecorded = System.checkFramesSaved();
 
   t.equal(framesRecorded, true, 'returns true if all frames recorded.');
 
   t.end();
 });
 
-test('System.recordedData should update each frame.', function(t) {
+test('System.data should update each frame.', function(t) {
 
   beforeTest();
 
@@ -179,21 +179,21 @@ test('System.recordedData should update each frame.', function(t) {
     });
     var item = this.add('Item');
   });
-  System.saveFrameDataComplete = function(num, data) { console.log('frame number: ' + num); };
-  System.recordData = true;
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
   System.loop();
-  t.assert(System.recordedData.frame === 0 && typeof System.recordedData.world !== 'undefined' && typeof System.recordedData.items !== 'undefined', 'records frame number, world and items.');
+  t.assert(System.data.frame === 0 && typeof System.data.world !== 'undefined' && typeof System.data.items !== 'undefined', 'records frame number, world and items.');
 
   System.loop();
-  t.assert(System.recordedData.frame === 1 && typeof System.recordedData.world !== 'undefined' && typeof System.recordedData.items !== 'undefined', 'records frame number, world and items.');
+  t.assert(System.data.frame === 1 && typeof System.data.world !== 'undefined' && typeof System.data.items !== 'undefined', 'records frame number, world and items.');
 
   System.loop();
-  t.assert(System.recordedData.frame === 2 && typeof System.recordedData.world !== 'undefined' && typeof System.recordedData.items !== 'undefined', 'records frame number, world and items.');
+  t.assert(System.data.frame === 2 && typeof System.data.world !== 'undefined' && typeof System.data.items !== 'undefined', 'records frame number, world and items.');
 
   t.end();
 });
 
-test('System._checkRecordFrame should check if System.clock is within recordStartFrame and recordEndFrame.', function(t) {
+test('System._checkSaveFrame should check if System.clock is within saveStartFrame and saveEndFrame.', function(t) {
 
   beforeTest();
 
@@ -205,24 +205,24 @@ test('System._checkRecordFrame should check if System.clock is within recordStar
     });
     var item = this.add('Item');
   });
-  System.saveFrameDataComplete = function(num, data) { console.log('frame number: ' + num); };
-  System.recordData = true;
-  System.recordStartFrame = 2;
-  System.recordEndFrame = 6;
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
+  System.saveStartFrame = 2;
+  System.saveEndFrame = 6;
   System.loop();
   System.loop();
   System.loop();
   System.loop();
   System.loop();
 
-  var checkRecordFrame = System._checkRecordFrame();
-  t.equal(checkRecordFrame, true, 'returns true if clock is bw recordStartFrame and recordEndFrame.');
+  var checkSaveFrame = System._checkSaveFrame();
+  t.equal(checkSaveFrame, true, 'returns true if clock is bw saveStartFrame and saveEndFrame.');
 
   t.end();
 });
 
 
-test('System._resetRecordedData() should reset System.recordedData.', function(t) {
+test('System._resetData() should reset System.data.', function(t) {
 
   beforeTest();
 
@@ -234,25 +234,25 @@ test('System._resetRecordedData() should reset System.recordedData.', function(t
     });
     var item = this.add('Item');
   });
-  System.saveFrameDataComplete = function(num, data) { console.log('frame number: ' + num); };
-  System.recordData = true;
-  System.recordStartFrame = 0;
-  System.recordEndFrame = 10;
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
+  System.saveStartFrame = 0;
+  System.saveEndFrame = 10;
   System.loop();
   System.loop();
   System.loop();
   System.loop();
   System.loop();
 
-  var recordedData = System._resetRecordedData();
+  var data = System._resetData();
 
-  t.equal(recordedData.frame, 5, 'sets frame = System.clock.');
-  t.equal(recordedData.items.length, 0, 'removes all items.');
+  t.equal(data.frame, 5, 'sets frame = System.clock.');
+  t.equal(data.items.length, 0, 'removes all items.');
 
   t.end();
 });
 
-test('System._saveData() copies properties from an item to a map of properties.', function(t) {
+test('System._saveItemProperties() copies properties from an item to a map of properties.', function(t) {
 
   beforeTest();
 
@@ -264,41 +264,41 @@ test('System._saveData() copies properties from an item to a map of properties.'
     });
     var item = this.add('Item');
   });
-  System.saveFrameDataComplete = function(num, data) { console.log('frame number: ' + num); };
-  System.recordData = true;
-  System.recordStartFrame = 0;
-  System.recordEndFrame = 10;
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
+  System.saveStartFrame = 0;
+  System.saveEndFrame = 10;
   System.loop();
   System.loop();
   System.loop();
   System.loop();
   System.loop();
 
-  System._resetRecordedData();
+  System._resetData();
   var record = System._records[System._records.length - 1];
-  System._saveData(0, record);
+  System._saveItemProperties(0, record);
 
-  t.equal(System.recordedData.frame, 4, 'frame = current System.clock value.');
-  t.ok(System.recordedData.items[0].id, 'records item.id.');
-  t.ok(System.recordedData.items[0].name, 'records item.name.');
-  t.ok(System.recordedData.items[0].scale, 'records item.scale.');
-  t.ok(System.recordedData.items[0].location, 'records item.location.');
-  t.ok(System.recordedData.items[0].velocity, 'records item.velocity.');
-  t.ok(System.recordedData.items[0].color, 'records item.color.');
-  t.ok(typeof System.recordedData.items[0].minSpeed !== 'undefined', 'records item.minSpeed.');
-  t.ok(typeof System.recordedData.items[0].maxSpeed !== 'undefined', 'records item.maxSpeed.');
+  t.equal(System.data.frame, 4, 'frame = current System.clock value.');
+  t.ok(System.data.items[0].id, 'records item.id.');
+  t.ok(System.data.items[0].name, 'records item.name.');
+  t.ok(System.data.items[0].scale, 'records item.scale.');
+  t.ok(System.data.items[0].location, 'records item.location.');
+  t.ok(System.data.items[0].velocity, 'records item.velocity.');
+  t.ok(System.data.items[0].color, 'records item.color.');
+  t.ok(typeof System.data.items[0].minSpeed !== 'undefined', 'records item.minSpeed.');
+  t.ok(typeof System.data.items[0].maxSpeed !== 'undefined', 'records item.maxSpeed.');
 
-  t.ok(System.recordedData.world.name, 'records world.name.');
-  t.ok(System.recordedData.world.colorMode, 'records world.colorMode.');
-  t.ok(System.recordedData.world.id, 'records world.id.');
-  t.ok(System.recordedData.world.resolution, 'records world.resolution.');
-  t.ok(System.recordedData.world.width, 'records world.width.');
-  t.ok(System.recordedData.world.height, 'records world.height.');
+  t.ok(System.data.world.name, 'records world.name.');
+  t.ok(System.data.world.colorMode, 'records world.colorMode.');
+  t.ok(System.data.world.id, 'records world.id.');
+  t.ok(System.data.world.resolution, 'records world.resolution.');
+  t.ok(System.data.world.width, 'records world.width.');
+  t.ok(System.data.world.height, 'records world.height.');
 
   t.end();
 });
 
-test('System.saveFrameDataComplete() is called when frame completes rendering.', function(t) {
+test('System.saveDataComplete() is called when frame completes rendering.', function(t) {
 
   beforeTest();
 
@@ -312,8 +312,8 @@ test('System.saveFrameDataComplete() is called when frame completes rendering.',
   });
 
   t.throws(function() {
-    System.saveFrameDataComplete();
-  }, 'saveFrameDataComplete() should throw an error if an override is not implemented.');
+    System.saveDataComplete();
+  }, 'saveDataComplete() should throw an error if an override is not implemented.');
 
   t.end();
 });
