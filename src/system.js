@@ -51,8 +51,6 @@ System.recordEndFrame = -1;
 System.recordItemProperties = {
   id: true,
   name: true,
-  width: true,
-  height: true,
   scale: true,
   location: true,
   velocity: true,
@@ -463,6 +461,5 @@ System._toggleStats = function() {
     FPSDisplay.show();
   }
 };
-
 
 module.exports = System;

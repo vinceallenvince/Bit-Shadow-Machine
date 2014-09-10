@@ -1,8 +1,3 @@
-/*var Item = require('../src/item'),
-    FPSDisplay = require('fpsdisplay'),
-    System = require('burner').System,
-    World = require('../src/world'),
-    System, obj;*/
 var test = require('tape');
 var Item = require('../src/item');
 var System, obj;
@@ -323,4 +318,58 @@ test('System.saveFrameDataComplete() is called when frame completes rendering.',
   t.end();
 });
 
+test('add() should add create a new item and add it to _records.', function(t) {
+
+  beforeTest();
+
+  System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    var itemA = this.add('Item');
+    t.assert(typeof itemA === 'object' && itemA.name === 'Item', 'add() should return the new item.');
+    t.equal(System._records.length, 2, 'should add a new item to _records. item + world = 2 records.');
+  });
+
+  t.end();
+});
+
+test('add() should pull from pull from System._pool if pooled items exist.', function(t) {
+
+  beforeTest();
+
+  function Obj() {
+    this.name = 'Obj';
+  }
+  Obj.prototype.init = function() {};
+
+  System.Classes = {
+    Item: Item,
+    Obj: Obj
+  }
+
+  System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });;
+
+    var itemA = this.add('Obj');
+    var itemB = this.add();
+    var itemC = this.add();
+    System.remove(itemA);
+    System.remove(itemB);
+    System.remove(itemC);
+    t.assert(System._records.length === 1 && System._pool.length === 3, 'remove() should remove item from _records and add to _pool.');
+
+    var itemD = this.add();
+    t.assert(System._records.length === 2 && System._pool.length === 2, 'add() should check to splice items off _pool.');
+
+  });
+
+  t.end();
+});
 

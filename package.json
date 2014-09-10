@@ -33,7 +33,7 @@
     "testling": "^1.6.1"
   },
   "dependencies": {
-    "burner": "^3.1.0",
+    "burner": "^3.1.2",
     "drawing-utils-lib": "~0.1.4",
     "vector2d-lib": "0.0.12",
     "quietriot": "~0.1.2",
