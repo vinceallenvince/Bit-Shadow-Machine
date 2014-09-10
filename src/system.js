@@ -182,7 +182,7 @@ System.loop = function() {
 
   for (i = len - 1; i >= 0; i -= 1) {
 
-    var record = records[i];
+    record = records[i];
 
     if (record && record.step && !record.world.pauseStep) {
 
