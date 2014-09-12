@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/bitshadowmachine.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/mover.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/walker.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/agent.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var rand = BitShadowMachine.Utils.getRandomNumber,
+          map = BitShadowMachine.Utils.map;
+
+      BitShadowMachine.System.Classes = {
+        Walker: Walker,
+        Agent: Agent
+      };
+
+      BitShadowMachine.System.setup(function() {
+
+        var world = this.add('World', {
+          width: 960,
+          height: 540,
+          resolution: 4,
+          el: document.getElementById('worldA'),
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0.1),
+          c: 0
+        });
+
+        var walkerA = this.add('Walker', {
+          perlin: true,
+          perlinSpeed: 0.01,
+          checkWorldEdges: false,
+          wrapWorldEdges: true,
+          maxSpeed: 2,
+          opacity: 0
+        });
+
+        for (var i = 0; i < 80; i++) {
+          var scale = rand(0.5, 3, true);
+          var agent = this.add('Agent', {
+            seekTarget: walkerA,
+            checkWorldEdges: false,
+            wrapWorldEdges: true,
+            flocking: true,
+            scale: scale,
+            mass: map(scale, 0.1, 1, 5, 30),
+            opacity: map(scale, 0.1, 1, 0.9, 0.7),
+            maxSpeed: 5,
+            maxSteeringForce: 1
+          });
+        }
+
+        var walkerB = this.add('Walker', {
+          perlin: true,
+          perlinSpeed: 0.01,
+          checkWorldEdges: false,
+          wrapWorldEdges: true,
+          maxSpeed: 2,
+          opacity: 0
+        });
+
+        for (var i = 0; i < 80; i++) {
+          var scale = rand(0.5, 3, true);
+          var agent = this.add('Agent', {
+            seekTarget: walkerB,
+            checkWorldEdges: false,
+            wrapWorldEdges: true,
+            flocking: true,
+            scale: scale,
+            mass: map(scale, 0.1, 1, 5, 30),
+            opacity: map(scale, 0.1, 1, 0.9, 0.7),
+            maxSpeed: 5,
+            maxSteeringForce: 1
+          });
+        }
+
+        var walkerC = this.add('Walker', {
+          perlin: true,
+          perlinSpeed: 0.01,
+          checkWorldEdges: false,
+          wrapWorldEdges: true,
+          maxSpeed: 2,
+          opacity: 0
+        });
+
+        for (var i = 0; i < 80; i++) {
+          var scale = rand(0.5, 3, true);
+          var agent = this.add('Agent', {
+            seekTarget: walkerC,
+            checkWorldEdges: false,
+            wrapWorldEdges: true,
+            flocking: true,
+            scale: scale,
+            mass: map(scale, 0.1, 1, 5, 30),
+            opacity: map(scale, 0.1, 1, 0.9, 0.7),
+            maxSpeed: 5,
+            maxSteeringForce: 1
+          });
+        }
+      });
+      BitShadowMachine.System.loop();
+
+    </script>
+  </body>
+</html>

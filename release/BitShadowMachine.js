@@ -2024,6 +2024,7 @@ Item._idCount = 0;
  * @param {number} [opt_options.name = 'Item'] The item's name.
  * @param {number} [opt_options.blur = 0] Blur.
  * @param {number} [opt_options.scale = 1] Scale.
+ * @param {number} [opt_options.angle = 0] Angle.
  * @param {Array} [opt_options.colorMode = 'rgb'] Color mode. Possible values are 'rgb' and 'hsl'.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {Array} [opt_options.opacity = 1] opacity.
@@ -2060,6 +2061,9 @@ Item.prototype.init = function(world, opt_options) {
 
   this.scale = typeof this.scale !== 'undefined' ? this.scale :
       typeof options.scale === 'undefined' ? 1 : options.scale;
+
+  this.angle = typeof this.angle !== 'undefined' ? this.angle :
+      options.angle || 0;
 
   this.colorMode = typeof this.colorMode !== 'undefined' ? this.colorMode :
       options.colorMode || 'rgb';
