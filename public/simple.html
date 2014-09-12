@@ -11,7 +11,12 @@
     <script type="text/javascript" charset="utf-8">
 
       var rand = BitShadowMachine.Utils.getRandomNumber;
-
+      BitShadowMachine.System.saveData = true;
+      BitShadowMachine.System.saveStartFrame = 0;
+      BitShadowMachine.System.saveEndFrame = 10;
+      BitShadowMachine.System.saveDataComplete = function(frameNumber, data) {
+        console.log('frameNumber: %d', frameNumber);
+      };
       BitShadowMachine.System.setup(function() {
 
         var world = this.add('World', {
@@ -24,7 +29,7 @@
           c: 0
         });
 
-        for (var i = 0; i < 1000; i++) {
+        for (var i = 0; i < 1; i++) {
           var color = rand(30, 200);
           var item = this.add('Item', {
             location: new BitShadowMachine.Vector(rand(0, world.width, true), rand(0, world.height, true)),

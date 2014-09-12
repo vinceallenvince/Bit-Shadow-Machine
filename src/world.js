@@ -61,9 +61,9 @@ World.prototype.init = function(world, opt_options) {
       ((viewportSize.height - (this.height * this.resolution)) / 2));
 
   this.color = options.color || [0, 0, 0];
-  this.hue = options.hue || 0;
-  this.saturation = typeof options.saturation === 'undefined' ? 1 : options.saturation;
-  this.lightness = typeof options.lightness === 'undefined' ? 0.5 : options.lightness;
+  //this.hue = options.hue || 0;
+  //this.saturation = typeof options.saturation === 'undefined' ? 1 : options.saturation;
+  //this.lightness = typeof options.lightness === 'undefined' ? 0.5 : options.lightness;
 
   //
 
@@ -81,7 +81,7 @@ World.prototype.init = function(world, opt_options) {
     style.zIndex = this.zIndex;
     style.backgroundColor = this.colorMode === 'rgb' ?
         'rgba(' + this.color[0] + ', ' + this.color[1] + ', ' + this.color[2] + ', ' + this.opacity + ')' :
-        'hsla(' + this.hue + ', ' + (this.saturation * 100) + '%, ' + (this.lightness * 100) + '%, ' + this.opacity + ')';
+        'hsla(' + this.color[0] + ', ' + (this.color[1] * 100) + '%, ' + (this.color[2] * 100) + '%, ' + this.opacity + ')';
 
     container.appendChild(this.el);
 

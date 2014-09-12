@@ -1,4 +1,5 @@
 var test = require('tape');
+var FPSDisplay = require('fpsdisplay');
 var Item = require('../src/item');
 var Vector = require('vector2d-lib');
 var System, obj;
@@ -42,10 +43,6 @@ function beforeTest() {
   };
   System.data = null;
 
-  System.saveDataComplete = function(frameNumber, data) {
-    throw new Error('System.saveDataComplete not implemented. Override this function.');
-  };
-
   document.body.innerHTML = '';
   var world = document.createElement('div');
   world.id = 'world';
@@ -61,6 +58,37 @@ test('load System.', function(t) {
   t.end();
 });
 
+// this test must be run directly after 'load System.'
+test('not implementing a saveDataComplete function throws error.', function(t) {
+
+  beforeTest();
+
+  var world;
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300,
+      colorMode: 'hsl'
+    });
+    var item = this.add('Item', {
+      color: [100, 0.5, 0.75],
+      opacity: 0.5
+    });
+  });
+
+  System.saveData = true;
+  System.saveStartFrame = 0;
+  System.saveEndFrame = 10;
+
+  t.throws(function() {
+    System.saveDataComplete();
+  });
+
+  t.end();
+});
+
 test('check static properties.', function(t) {
   beforeTest();
   t.equal(typeof System.Classes, 'object', 'has a Classes object.');
@@ -72,6 +100,29 @@ test('check static properties.', function(t) {
   t.equal(typeof System.saveItemProperties, 'object', 'has a saveItemProperties object.');
   t.equal(typeof System.saveWorldProperties, 'object', 'has a saveWorldProperties object.');
   t.equal(typeof System.data, 'object', 'has a data object.');
+  t.end();
+});
+
+test('unknown class adds an Item by default.', function(t) {
+
+  beforeTest();
+
+  var world;
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300,
+      colorMode: 'hsb'
+    });
+    var item = this.add('Hello');
+  });
+
+  System.saveDataComplete = function(num, data) {};
+
+  t.ok(System._records[1] instanceof Item, 'Adds an Item.');
+
   t.end();
 });
 
@@ -305,6 +356,8 @@ test('System.saveDataComplete() is called when frame completes rendering.', func
 
   beforeTest();
 
+  var val;
+
   System.setup(function() {
     var world = this.add('World', {
       el: document.getElementById('world'),
@@ -314,10 +367,18 @@ test('System.saveDataComplete() is called when frame completes rendering.', func
     var item = this.add('Item');
   });
 
-  t.throws(function() {
-    System.saveDataComplete();
-  }, 'saveDataComplete() should throw an error if an override is not implemented.');
+  System.saveDataComplete = function(num, data) {
+    val = num;
+  };
 
+  System.saveData = true;
+  System.saveStartFrame = 0;
+  System.saveEndFrame = 10;
+  System.loop();
+  System.loop();
+  System.loop();
+
+  t.equal(val, 2, 'calls saveDataComplete().');
   t.end();
 });
 
@@ -443,6 +504,154 @@ test('System.zSort = true should sort _records by zIndex value.', function(t) {
 
   System.loop();
   t.equal(System._records[1].zIndex, 1, 'Item with lowest zIndex value is at the beginning of the records array.');
+
+  t.end();
+});
+
+test('hsl color mode should save hue, saturation and lightness.', function(t) {
+
+  beforeTest();
+
+  var world;
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300,
+      colorMode: 'hsl'
+    });
+    var item = this.add('Item', {
+      color: [100, 0.5, 0.75],
+      opacity: 0.5
+    });
+  });
+
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
+  System.saveStartFrame = 0;
+  System.saveEndFrame = 10;
+  System.loop();
+  System.loop();
+  System.loop();
+  System.loop();
+  System.loop();
+
+  t.notEqual(world.el.style.boxShadow.search('rgba'), -1, 'hsl color converted to rgb when assigned to world element. Including opacity converts rgb -> rgba.');
+
+  t.end();
+});
+
+test('unknown color mode throws error.', function(t) {
+
+  beforeTest();
+
+  var world;
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300,
+      colorMode: 'hsb'
+    });
+    var item = this.add('Item', {
+      color: [100, 0.5, 0.75],
+      opacity: 0.5
+    });
+  });
+
+  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveData = true;
+  System.saveStartFrame = 0;
+  System.saveEndFrame = 10;
+
+  t.throws(function() {
+    System.loop();
+  });
+
+  t.end();
+});
+
+test('_keyup() should catch keyup events.', function(t) {
+
+  // RESET
+
+  beforeTest();
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    this.add('Item', {
+      location: new Vector(100, 100)
+    });
+    this.add('Item', {
+      location: new Vector(100, 100)
+    });
+  });
+  System.setupFunc = function() {};
+  System._keyup({
+    keyCode: 82 // reset
+  });
+
+  t.equal(System._records.length, 0, 'should remove all items.');
+
+  // PLAY/PAUSE
+
+  beforeTest();
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    this.add('Item', {
+      location: new Vector(100, 100)
+    });
+  });
+  System._keyup({
+    keyCode: 80 // pause/play
+  });
+  t.equal(System._records[0].pauseStep, true, 'keyCode 80 should set world.pauseStep = true.');
+  System._keyup({
+    keyCode: 80 // pause/play
+  });
+  t.equal(System._records[0].pauseStep, false, 'keyCode 80 should set world.pauseStep = false.');
+
+  // FPSDISPLAY
+
+  beforeTest();
+
+  System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    this.add('Item', {
+      location: new Vector(100, 100)
+    });
+  });
+
+  System._keyup({
+    keyCode: 83 // fpsDisplay
+  });
+  t.ok(FPSDisplay.active, 'should activate.');
+
+  // test that we're sending FPSDisplay a length value
+  // 2 records, world and item added above
+  System.loop();
+  t.equal(FPSDisplay.totalItems, 2, 'should display records length.');
+
+  FPSDisplay.fps = 1;
+  System._keyup({
+    keyCode: 83
+  });
+  t.notOk(FPSDisplay.active, 'should deactivate.');
 
   t.end();
 });

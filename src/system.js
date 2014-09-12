@@ -1,7 +1,7 @@
 var Item = require('./item');
 var FPSDisplay = require('fpsdisplay');
 var System = require('burner').System;
-var Vector = require('burner').Vector;
+var Vector = require('vector2d-lib');
 var World = require('./world');
 
 /**
@@ -221,10 +221,9 @@ System.loop = function() {
 
       shadows = buffers[record.world.id];
 
-      if (record.world.colorMode === 'rgb' && record.color) {  // TODO: test this
+      if (record.world.colorMode === 'rgb' && record.color) {
         shadows = shadows + System._buildStringRGBA(record);
-      } else if (record.world.colorMode === 'hsl' && typeof record.hue !== 'undefined' &&
-          typeof record.saturation !== 'undefined' && typeof record.lightness !== 'undefined') {
+      } else if (record.world.colorMode === 'hsl' && record.color) {
         shadows = shadows + System._buildStringHSLA(record);
       } else {
         throw new Error('System: current color mode not supported.');
@@ -277,7 +276,7 @@ System.totalFramesCallback = function() {
 
 /**
  * Checks if the System recorded the total number of frames.
- * @return {[type]} [description]
+ * @return {boolean} True if system has recorded the total number of frames.
  */
 System.checkFramesSaved = function() {
   var totalFrames = System.saveEndFrame - System.saveStartFrame;
@@ -345,6 +344,7 @@ System._saveItemProperties = function(index, record) {
   }
 };
 
+// TODO: implement step forward function
 /**
  * Pauses the system and processes one step in records.
  *
@@ -352,27 +352,13 @@ System._saveItemProperties = function(index, record) {
  * @memberof System
  * @private
  */
-System._stepForward = function() {
+/*System._stepForward = function() {
 
-  var i, j, max, records = System._records.list,
+  var i, j, max, records = System._records,
       world, worlds = System.getAllWorlds();
 
-    for (i = 0, max = worlds.length; i < max; i++) {
-      world = worlds[i];
-      world.pauseStep = true;
-      for (j = records.length - 1; j >= 0; j -= 1) {
-        if (records[j].step) {
-          records[j].step();
-        }
-      }
-      for (j = records.length - 1; j >= 0; j -= 1) {
-        if (records[j].draw) {
-          records[j].draw();
-        }
-      }
-    }
   System.clock++;
-};
+};*/
 
 /**
  * Builds an hsla box shadow string based on the passed
@@ -388,7 +374,7 @@ System._buildStringHSLA = function(item) {
         (loc.y * resolution) + 'px ' + // right offset
         item.blur + 'px ' + // blur
         (resolution * item.scale) + 'px ' + // spread
-        'hsla(' + item.hue + ',' + (item.saturation * 100) + '%,' + (item.lightness * 100) + '%' + // color
+        'hsla(' + item.color[0] + ',' + (item.color[1] * 100) + '%,' + (item.color[2] * 100) + '%' + // color
         ', ' + item.opacity + '),'; // opacity
 };
 
@@ -424,7 +410,7 @@ System._keyup = function(e) {
 
   switch(e.keyCode) {
     case 39:
-      System._stepForward();
+      //System._stepForward();
       break;
     case 80: // p; pause/play
       for (i = 0, max = worlds.length; i < max; i++) {
@@ -449,6 +435,7 @@ System._keyup = function(e) {
  * @private
  */
 System._toggleStats = function() {
+
   if (!FPSDisplay.fps) {
     FPSDisplay.init();
   } else {
@@ -460,6 +447,27 @@ System._toggleStats = function() {
   } else {
     FPSDisplay.show();
   }
+};
+
+/**
+ * Resets the system.
+ *
+ * @function _resetSystem
+ * @memberof System
+ * @private
+ */
+System._resetSystem = function() {
+
+  var i, max, worlds = System.allWorlds();
+
+  for (i = 0, max = worlds.length; i < max; i++) {
+    worlds[i].pauseStep = false;
+  }
+
+  System._records = [];
+  System._pool = [];
+  System.clock = 0;
+  System.setup(System.setupFunc);
 };
 
 module.exports = System;

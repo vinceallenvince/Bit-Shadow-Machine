@@ -2245,7 +2245,7 @@ module.exports = BitShadowMachine;
 var Item = _dereq_('./item');
 var FPSDisplay = _dereq_('fpsdisplay');
 var System = _dereq_('burner').System;
-var Vector = _dereq_('burner').Vector;
+var Vector = _dereq_('vector2d-lib');
 var World = _dereq_('./world');
 
 /**
@@ -2415,7 +2415,7 @@ System.loop = function() {
       shadows = '';
 
   // check if we've exceeded totalFrames
-  if (System.checkFramesSaved()) { // TODO: test this
+  if (System.checkFramesSaved()) {
     return;
   }
 
@@ -2426,11 +2426,11 @@ System.loop = function() {
 
   for (i = len - 1; i >= 0; i -= 1) {
 
-    var record = records[i];
+    record = records[i];
 
     if (record && record.step && !record.world.pauseStep) {
 
-      if (record.life < record.lifespan) { // TODO: test this
+      if (record.life < record.lifespan) {
         record.life += 1;
       } else if (record.lifespan !== -1) {
         System.remove(record);
@@ -2444,15 +2444,15 @@ System.loop = function() {
       record.step();
 
       if (System.saveData && record.name !== 'World' && record.opacity) { // we don't want to record World data as Item
-        if (!System._checkRecordFrame()) {
+        if (!System._checkSaveFrame()) {
           continue;
         }
-        System._saveData(System.data.items.length, record);
+        System._saveItemProperties(System.data.items.length, record);
       }
     }
   }
 
-  if (System.zSort) { // TODO: test this
+  if (System.zSort) {
     records = records.sort(function(a,b){return (a.zIndex - b.zIndex);});
   }
 
@@ -2467,8 +2467,7 @@ System.loop = function() {
 
       if (record.world.colorMode === 'rgb' && record.color) {
         shadows = shadows + System._buildStringRGBA(record);
-      } else if (record.world.colorMode === 'hsl' && typeof record.hue !== 'undefined' &&
-          typeof record.saturation !== 'undefined' && typeof record.lightness !== 'undefined') {
+      } else if (record.world.colorMode === 'hsl' && record.color) {
         shadows = shadows + System._buildStringHSLA(record);
       } else {
         throw new Error('System: current color mode not supported.');
@@ -2489,7 +2488,7 @@ System.loop = function() {
 
   // check to call frame complete callback.
   if (System.saveData) {
-    System.saveFrameDataComplete(System.clock, System.data);
+    System.saveDataComplete(System.clock, System.data);
   }
   System.clock++;
   if (FPSDisplay.active) { // TODO: test this
@@ -2507,8 +2506,8 @@ System.loop = function() {
  * @param {Object} data The data saved from the current frame.
  * @throws {Object} If not overridden.
  */
-System.saveFrameDataComplete = function(frameNumber, data) {
-  throw new Error('System.saveFrameDataComplete not implemented. Override this function.');
+System.saveDataComplete = function(frameNumber, data) {
+  throw new Error('System.saveDataComplete not implemented. Override this function.');
 };
 
 /**
@@ -2521,7 +2520,7 @@ System.totalFramesCallback = function() {
 
 /**
  * Checks if the System recorded the total number of frames.
- * @return {[type]} [description]
+ * @return {boolean} True if system has recorded the total number of frames.
  */
 System.checkFramesSaved = function() {
   var totalFrames = System.saveEndFrame - System.saveStartFrame;
@@ -2535,7 +2534,7 @@ System.checkFramesSaved = function() {
  * Checks if System.clock is within bounds.
  * @returns {Boolean} True if frame should be recorded.
  */
-System._checkRecordFrame = function() {
+System._checkSaveFrame = function() {
   if (System.clock >= System.saveStartFrame && System.clock <= System.saveEndFrame) {
     return true;
   }
@@ -2558,7 +2557,7 @@ System._resetData = function() {
  * @param {number} index The array index for this object.
  * @param {Object} record An Item instance.
  */
-System._saveData = function(index, record) {
+System._saveItemProperties = function(index, record) {
 
   for (var i in record) {
     if (record.hasOwnProperty(i) && System.saveItemProperties[i]) {
@@ -2589,6 +2588,7 @@ System._saveData = function(index, record) {
   }
 };
 
+// TODO: implement step forward function
 /**
  * Pauses the system and processes one step in records.
  *
@@ -2596,27 +2596,13 @@ System._saveData = function(index, record) {
  * @memberof System
  * @private
  */
-System._stepForward = function() {
+/*System._stepForward = function() {
 
-  var i, j, max, records = System._records.list,
+  var i, j, max, records = System._records,
       world, worlds = System.getAllWorlds();
 
-    for (i = 0, max = worlds.length; i < max; i++) {
-      world = worlds[i];
-      world.pauseStep = true;
-      for (j = records.length - 1; j >= 0; j -= 1) {
-        if (records[j].step) {
-          records[j].step();
-        }
-      }
-      for (j = records.length - 1; j >= 0; j -= 1) {
-        if (records[j].draw) {
-          records[j].draw();
-        }
-      }
-    }
   System.clock++;
-};
+};*/
 
 /**
  * Builds an hsla box shadow string based on the passed
@@ -2632,7 +2618,7 @@ System._buildStringHSLA = function(item) {
         (loc.y * resolution) + 'px ' + // right offset
         item.blur + 'px ' + // blur
         (resolution * item.scale) + 'px ' + // spread
-        'hsla(' + item.hue + ',' + (item.saturation * 100) + '%,' + (item.lightness * 100) + '%' + // color
+        'hsla(' + item.color[0] + ',' + (item.color[1] * 100) + '%,' + (item.color[2] * 100) + '%' + // color
         ', ' + item.opacity + '),'; // opacity
 };
 
@@ -2668,7 +2654,7 @@ System._keyup = function(e) {
 
   switch(e.keyCode) {
     case 39:
-      System._stepForward();
+      //System._stepForward();
       break;
     case 80: // p; pause/play
       for (i = 0, max = worlds.length; i < max; i++) {
@@ -2693,6 +2679,7 @@ System._keyup = function(e) {
  * @private
  */
 System._toggleStats = function() {
+
   if (!FPSDisplay.fps) {
     FPSDisplay.init();
   } else {
@@ -2706,9 +2693,30 @@ System._toggleStats = function() {
   }
 };
 
+/**
+ * Resets the system.
+ *
+ * @function _resetSystem
+ * @memberof System
+ * @private
+ */
+System._resetSystem = function() {
+
+  var i, max, worlds = System.allWorlds();
+
+  for (i = 0, max = worlds.length; i < max; i++) {
+    worlds[i].pauseStep = false;
+  }
+
+  System._records = [];
+  System._pool = [];
+  System.clock = 0;
+  System.setup(System.setupFunc);
+};
+
 module.exports = System;
 
-},{"./item":10,"./world":13,"burner":3,"fpsdisplay":7}],13:[function(_dereq_,module,exports){
+},{"./item":10,"./world":13,"burner":3,"fpsdisplay":7,"vector2d-lib":9}],13:[function(_dereq_,module,exports){
 var Item = _dereq_('./item');
 var Utils = _dereq_('drawing-utils-lib');
 var Vector = _dereq_('vector2d-lib');
@@ -2772,9 +2780,9 @@ World.prototype.init = function(world, opt_options) {
       ((viewportSize.height - (this.height * this.resolution)) / 2));
 
   this.color = options.color || [0, 0, 0];
-  this.hue = options.hue || 0;
-  this.saturation = typeof options.saturation === 'undefined' ? 1 : options.saturation;
-  this.lightness = typeof options.lightness === 'undefined' ? 0.5 : options.lightness;
+  //this.hue = options.hue || 0;
+  //this.saturation = typeof options.saturation === 'undefined' ? 1 : options.saturation;
+  //this.lightness = typeof options.lightness === 'undefined' ? 0.5 : options.lightness;
 
   //
 
@@ -2792,7 +2800,7 @@ World.prototype.init = function(world, opt_options) {
     style.zIndex = this.zIndex;
     style.backgroundColor = this.colorMode === 'rgb' ?
         'rgba(' + this.color[0] + ', ' + this.color[1] + ', ' + this.color[2] + ', ' + this.opacity + ')' :
-        'hsla(' + this.hue + ', ' + (this.saturation * 100) + '%, ' + (this.lightness * 100) + '%, ' + this.opacity + ')';
+        'hsla(' + this.color[0] + ', ' + (this.color[1] * 100) + '%, ' + (this.color[2] * 100) + '%, ' + this.opacity + ')';
 
     container.appendChild(this.el);
 
