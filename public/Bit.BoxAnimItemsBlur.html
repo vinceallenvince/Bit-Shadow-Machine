@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      function Box(opt_options) {
+        var options = opt_options || {};
+        options.name = 'Box';
+        BitShadowMachine.Item.call(this, options);
+      }
+      BitShadowMachine.Utils.extend(Box, BitShadowMachine.Item);
+
+      // An init() method is required.
+      Box.prototype.init = function(options) {
+        this.color = options.color || [100, 100, 100];
+        this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
+        this.acceleration = options.acceleration || new BitShadowMachine.Vector();
+        this.velocity = options.velocity || new BitShadowMachine.Vector();
+        this.mass = options.mass || 10;
+        this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
+        this.minSpeed = options.minSpeed || 0;
+        this.bounciness = options.bounciness || 1;
+        this._force = new BitShadowMachine.Vector();
+      };
+
+      Box.prototype.step = function() {
+        if (this.beforeStep) {
+          this.beforeStep.call(this);
+        }
+        this.applyForce(this.world.gravity);
+        this.velocity.add(this.acceleration);
+        this.velocity.limit(this.maxSpeed, this.minSpeed);
+        this.location.add(this.velocity);
+        this._checkWorldEdges();
+        this.acceleration.mult(0);
+      };
+
+      Box.prototype.applyForce = function(force) {
+        if (force) {
+          this._force.x = force.x;
+          this._force.y = force.y;
+          this._force.div(this.mass);
+          this.acceleration.add(this._force);
+          return this.acceleration;
+        }
+      };
+
+      Box.prototype._checkWorldEdges = function() {
+        if (this.location.y > this.world.height) { // bottom
+          this.velocity.mult(-this.bounciness);
+          this.location.y = this.world.height;
+          return;
+        }
+      };
+
+      /**
+       * Tell BitShadowMachine where to find classes.
+       */
+      BitShadowMachine.Classes = {
+        Box: Box
+      };
+
+      /**
+       * Create a new BitShadowMachine system.
+       */
+      BitShadowMachine.System.setup(function() {
+        var world = this.add('World', {
+          resolution: 4,
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0.1),
+          c: 0
+        });
+
+        var rand = BitShadowMachine.Utils.getRandomNumber;
+        for (var i = 0; i < 100; i++) {
+          var scale = rand(0.25, 4, true);
+          this.add('Box', {
+            location: new BitShadowMachine.Vector(rand(0, world.width),
+                rand(0, world.height / 2)),
+            opacity: BitShadowMachine.Utils.map(scale, 0.25, 4, 1, 0.25),
+            scale: scale,
+            mass: BitShadowMachine.Utils.map(scale, 0.25, 4, 10, 15),
+            beforeStep: function() {
+              this.blur = BitShadowMachine.Utils.map(this.velocity.mag(), this.minSpeed,
+                  this.maxSpeed, 0, 50);
+            }
+          });
+        }
+      });
+      /**
+       * Start the animation loop.
+       */
+      BitShadowMachine.System.loop();
+    </script>
+  </body>
+</html>

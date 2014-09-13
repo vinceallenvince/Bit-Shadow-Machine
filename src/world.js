@@ -43,7 +43,7 @@ World.prototype.init = function(world, opt_options) {
   var options = opt_options || {},
       viewportSize = Utils.getWindowSize();
 
-  this.gravity = options.gravity || new Vector(0, 1);
+  this.gravity = options.gravity || new Vector(0, 0.1);
   this.c = options.c || 0.1;
   this.pauseStep = !!options.pauseStep;
   this.pauseDraw = !!options.pauseDraw;

@@ -32,7 +32,7 @@ test('init() should initialize with default properties.', function(t) {
   obj = new World({el: view});
   obj.init();
   t.equal(obj.gravity.x, 0, 'Default gravity x.');
-  t.equal(obj.gravity.y, 1, 'Default gravity y.');
+  t.equal(obj.gravity.y, 0.1, 'Default gravity y.');
   t.equal(obj.c, 0.1, 'Default c.');
   t.equal(obj.pauseStep, false, 'Default pauseStep.');
   t.equal(obj.pauseDraw, false, 'Default pauseDraw.');

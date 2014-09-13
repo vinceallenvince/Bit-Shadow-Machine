@@ -25,11 +25,11 @@ IMPORTANT: Your items must extend the BitShadowMachine.Item class.
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>Bit-Shadow Machine</title>
-  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
   <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
+    <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
       function Box(opt_options) {
@@ -52,14 +52,26 @@ IMPORTANT: Your items must extend the BitShadowMachine.Item class.
         Box: Box
       };
 
-      var worldA = new BitShadowMachine.World();
-
       /**
        * Create a new BitShadowMachine system.
        */
-      BitShadowMachine.System.init(function() {
+      BitShadowMachine.System.setup(function() {
+        var world = this.add('World', {
+          width: 960,
+          height: 540,
+          resolution: 4,
+          el: document.getElementById('worldA'),
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(),
+          c: 0
+        });
+
         this.add('Box');
-      }, null, Modernizr);
+      });
+      /**
+       * Start the animation loop.
+       */
+      BitShadowMachine.System.loop();
     </script>
   </body>
 </html>
@@ -67,7 +79,7 @@ IMPORTANT: Your items must extend the BitShadowMachine.Item class.
 
 Notice we're defining a Box class that extends BitShadowMachine.Item. The class must also have an init() method to set additional properties.
 
-Loading the above, you should see a gray box in the middle of the browser. View it at [public/simple.html](http://foldi.github.io/Bit-Shadow-Machine/simple.html).
+Loading the above, you should see a white box in the middle of the browser. View it at [public/Bit.Box.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.Box.html).
 
 
 ## Animation
@@ -80,8 +92,7 @@ Let's make the box move.
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>Bit-Shadow Machine</title>
-  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
   <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
@@ -144,46 +155,55 @@ Let's make the box move.
         Box: Box
       };
 
-      var worldA = new BitShadowMachine.World();
-
       /**
        * Create a new BitShadowMachine system.
        */
-      BitShadowMachine.System.init(function() {
+      BitShadowMachine.System.setup(function() {
+        var world = this.add('World', {
+          resolution: 4,
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0.1),
+          c: 0
+        });
+
         this.add('Box');
-      }, null, Modernizr);
+      });
+      /**
+       * Start the animation loop.
+       */
+      BitShadowMachine.System.loop();
     </script>
   </body>
 </html>
 ```
 
-The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. View it at [public/simple-anim.html](http://foldi.github.io/Bit-Shadow-Machine/simple-anim.html).
+The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. View it at [public/Bit.BoxAnim.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.BoxAnim.html).
 
 ## Multiple items
 
 Now we'll see the power of the Bit-Shadow Machine. Replace the System.init() call with the following.
 
 ```javascript
-BitShadowMachine.System.init(function() {
-  var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
+BitShadowMachine.System.setup(function() {
+  var rand = BitShadowMachine.Utils.getRandomNumber;
   for (var i = 0; i < 500; i++) {
-    var scale = getRandomNumber(0.25, 2, true);
+    var scale = rand(0.25, 4, true);
     this.add('Box', {
-      location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
-          getRandomNumber(0, worldA.height / 2)),
-      opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+      location: new BitShadowMachine.Vector(rand(0, world.width),
+          rand(0, world.height / 2)),
+      opacity: BitShadowMachine.Utils.map(scale, 0.25, 4, 1, 0.25),
       scale: scale,
-      mass: scale
+      mass: BitShadowMachine.Utils.map(scale, 0.25, 4, 10, 15)
     });
   }
-}, null, Modernizr);
+});
 ```
 
 We're adding 500 items with random scale and random location. We've also inversely mapped scale and opacity so the largest items have the least opacity.
 
 Press 's' on your keyboard. You should see a status menu appear in the top left that indicates the total number of objects and the current frame rate. You should see 501 items (the world counts as an item) and a frame rate close to 60 frames per second.
 
-View it at [public/simple-anim-items.html](http://foldi.github.io/Bit-Shadow-Machine/simple-anim-items.html).
+View it at [public/Bit.BoxAnimItems.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.BoxAnimItems.html).
 
 ## Blur
 
@@ -191,26 +211,27 @@ Since we're using CSS box-shadows, we can also apply blur to our items. Replace 
 
 ```javascript
 BitShadowMachine.System.init(function() {
-  var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
-  for (var i = 0; i < 250; i++) {
-    var scale = getRandomNumber(0.25, 2, true);
+  var rand = BitShadowMachine.Utils.getRandomNumber;
+  for (var i = 0; i < 100; i++) {
+    var scale = rand(0.25, 4, true);
     this.add('Box', {
-      location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
-          getRandomNumber(0, worldA.height / 2)),
-      opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+      location: new BitShadowMachine.Vector(rand(0, world.width),
+          rand(0, world.height / 2)),
+      opacity: BitShadowMachine.Utils.map(scale, 0.25, 4, 1, 0.25),
       scale: scale,
-      mass: scale,
+      mass: BitShadowMachine.Utils.map(scale, 0.25, 4, 10, 15),
       beforeStep: function() {
-        this.blur = BitShadowMachine.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 0, 100);
+        this.blur = BitShadowMachine.Utils.map(this.velocity.mag(), this.minSpeed,
+            this.maxSpeed, 0, 50);
       }
     });
   }
-}, null, Modernizr);
+});
 ```
 
 We've added a function as a beforeStep property that gets called from step(). In beforeStep, we're mapping the magnitude of the item's velocity to its min/max speed and producing a blur value between 0 and 100. Running the code you should see the items blur as they accelerate.
 
-Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps. View it at [public/simple-anim-blur.html](http://foldi.github.io/Bit-Shadow-Machine/simple-anim-blur.html).
+Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps. View it at [public/Bit.BoxAnimItemsBlur.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.BoxAnimItemsBlur.html).
 
 Now step back and remember these animated items are all just CSS box shadows on the document body.
 
@@ -224,14 +245,12 @@ A Bit-Shadow world can be any element that has a box shadow. In the example belo
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>Bit-Shadow Machine</title>
-  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
   <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
-
       function Box(opt_options) {
         var options = opt_options || {};
         options.name = 'Box';
@@ -253,20 +272,25 @@ A Bit-Shadow world can be any element that has a box shadow. In the example belo
       };
 
       /**
-       * Passes a reference to a DOM element as the world.
-       */
-      var worldA = new BitShadowMachine.World(document.getElementById('worldA'), {
-        width: 800,
-        height: 600,
-        backgroundColor: [0, 0, 0]
-      });
-
-      /**
        * Create a new BitShadowMachine system.
        */
-      BitShadowMachine.System.init(function() {
+      BitShadowMachine.System.setup(function() {
+        var world = this.add('World', {
+          width: 960,
+          height: 540,
+          resolution: 4,
+          el: document.getElementById('worldA'),
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0.1),
+          c: 0
+        });
+
         this.add('Box');
-      }, worldA, Modernizr);
+      });
+      /**
+       * Start the animation loop.
+       */
+      BitShadowMachine.System.loop();
     </script>
   </body>
 </html>
@@ -274,7 +298,7 @@ A Bit-Shadow world can be any element that has a box shadow. In the example belo
 
 Notice we also get a menu by default. To suppress the menu, pass 'noMenu: true' as an optional property when creating the world.
 
-View it at [public/simple-world.html](http://foldi.github.io/Bit-Shadow-Machine/simple-world.html).
+View it at [public/Bit.World.html](http://foldi.github.io/Bit-Shadow-Machine/Bit.World.html).
 
 ## Multple worlds
 
@@ -286,8 +310,7 @@ Bit-Shadow Machine can support multiple worlds. Just pass them as an array to th
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>Bit-Shadow Machine</title>
-  <link rel="stylesheet" href="css/BitShadowMachine.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Modernizr.min.js" type="text/javascript" charset="utf-8"></script>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
   <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
@@ -296,7 +319,12 @@ Bit-Shadow Machine can support multiple worlds. Just pass them as an array to th
     <div id='worldC'></div>
     <script type="text/javascript" charset="utf-8">
 
+      var viewportSize = BitShadowMachine.Utils.getWindowSize(),
+          rand = BitShadowMachine.Utils.getRandomNumber,
+          map = BitShadowMachine.Utils.map;
+
       function Box(opt_options) {
+        console.log(arguments);
         var options = opt_options || {};
         options.name = 'Box';
         BitShadowMachine.Item.call(this, options);
@@ -304,46 +332,10 @@ Bit-Shadow Machine can support multiple worlds. Just pass them as an array to th
       BitShadowMachine.Utils.extend(Box, BitShadowMachine.Item);
 
       // An init() method is required.
-      Box.prototype.init = function(options) {
+      Box.prototype.init = function(world, options) {
+        console.log(arguments);
         this.color = options.color || [100, 100, 100];
-        this.location = options.location || new BitShadowMachine.Vector(this.world.width / 2, this.world.height / 2);
-        this.acceleration = options.acceleration || new BitShadowMachine.Vector();
-        this.velocity = options.velocity || new BitShadowMachine.Vector();
-        this.mass = options.mass || 10;
-        this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
-        this.minSpeed = options.minSpeed || 0;
-        this.bounciness = options.bounciness || 1;
-        this._force = new BitShadowMachine.Vector();
-      };
-
-      Box.prototype.step = function() {
-        if (this.beforeStep) {
-          this.beforeStep.call(this);
-        }
-        this.applyForce(this.world.gravity);
-        this.velocity.add(this.acceleration);
-        this.velocity.limit(this.maxSpeed, this.minSpeed);
-        this.location.add(this.velocity);
-        this._checkWorldEdges();
-        this.acceleration.mult(0);
-      };
-
-      Box.prototype.applyForce = function(force) {
-        if (force) {
-          this._force.x = force.x;
-          this._force.y = force.y;
-          this._force.div(this.mass);
-          this.acceleration.add(this._force);
-          return this.acceleration;
-        }
-      };
-
-      Box.prototype._checkWorldEdges = function() {
-        if (this.location.y > this.world.height) { // bottom
-          this.velocity.mult(-this.bounciness);
-          this.location.y = this.world.height;
-          return;
-        }
+        this.location = options.location || new BitShadowMachine.Vector(world.width / 2, world.height / 2);
       };
 
       /**
@@ -353,81 +345,78 @@ Bit-Shadow Machine can support multiple worlds. Just pass them as an array to th
         Box: Box
       };
 
-      var viewportSize = BitShadowMachine.Utils.getWindowSize();
-
-      /**
-       * Passes a reference to a DOM element as the world.
-       */
-      var worldA = new BitShadowMachine.World(document.getElementById('worldA'), {
-        width: 320,
-        height: 480,
-        backgroundColor: [0, 0, 0],
-        location: new BitShadowMachine.Vector(0, viewportSize.height / 2 - 240)
-      });
-
-      var worldB = new BitShadowMachine.World(document.getElementById('worldB'), {
-        width: 320,
-        height: 480,
-        backgroundColor: [50, 50, 50]
-      });
-
-      var worldC = new BitShadowMachine.World(document.getElementById('worldC'), {
-        width: 320,
-        height: 480,
-        backgroundColor: [100, 100, 100],
-        location: new BitShadowMachine.Vector(viewportSize.width - 320, viewportSize.height / 2 - 240)
-      });
-
       /**
        * Create a new BitShadowMachine system.
        */
-      BitShadowMachine.System.init(function() {
+      BitShadowMachine.System.setup(function() {
+        var worldA = this.add('World', {
+          width: 320,
+          height: 480,
+          location: new BitShadowMachine.Vector(0, viewportSize.height / 2 - 240),
+          resolution: 4,
+          colorMode: 'hsl',
+          el: document.getElementById('worldA')
+        });
 
-        var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
-        for (var i = 0; i < 100; i++) {
-          var scale = getRandomNumber(0.25, 2, true);
+        var worldB = this.add('World', {
+          width: 320,
+          height: 480,
+          resolution: 4,
+          colorMode: 'hsl',
+          el: document.getElementById('worldB')
+        });
+
+        var worldC = this.add('World', {
+          width: 320,
+          height: 480,
+          location: new BitShadowMachine.Vector(viewportSize.width - 320, viewportSize.height / 2 - 240),
+          resolution: 4,
+          colorMode: 'hsl',
+          el: document.getElementById('worldC')
+        });
+
+        var i, scale;
+        for (i = 0; i < 200; i++) {
+          scale = rand(0.25, 2, true);
           this.add('Box', {
-            location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
-                getRandomNumber(0, worldA.height / 2)),
-            opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+            location: new BitShadowMachine.Vector(rand(0, worldA.width), rand(0, worldA.height / 1.2)),
             scale: scale,
-            mass: scale
-          });
+            mass: map(scale, 0.25, 2, 10, 20),
+            opacity: map(scale, 0.25, 2, 0.8, 0.2),
+            color: [0, 1, 0.5]
+          }, worldA);
         }
-
-        var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
-        for (var i = 0; i < 100; i++) {
-          var scale = getRandomNumber(0.25, 2, true);
+        for (i = 0; i < 200; i++) {
+          scale = rand(0.25, 2, true);
           this.add('Box', {
-            location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
-                getRandomNumber(0, worldA.height / 2)),
-            opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+            location: new BitShadowMachine.Vector(rand(0, worldA.width), rand(0, worldA.height / 1.2)),
             scale: scale,
-            mass: scale,
-            color: [200, 200, 200]
+            mass: map(scale, 0.25, 2, 10, 20),
+            opacity: map(scale, 0.25, 2, 0.8, 0.2),
+            color: [20, 1, 0.5]
           }, worldB);
         }
-
-        var getRandomNumber = BitShadowMachine.Utils.getRandomNumber;
-        for (var i = 0; i < 100; i++) {
-          var scale = getRandomNumber(0.25, 2, true);
+        for (i = 0; i < 200; i++) {
+          scale = rand(0.25, 2, true);
           this.add('Box', {
-            location: new BitShadowMachine.Vector(getRandomNumber(0, worldA.width),
-                getRandomNumber(0, worldA.height / 2)),
-            opacity: BitShadowMachine.Utils.map(scale, 1, 2, 1, 0.25),
+            location: new BitShadowMachine.Vector(rand(0, worldA.width), rand(0, worldA.height / 1.2)),
             scale: scale,
-            mass: scale,
-            color: [0, 0, 0]
+            mass: map(scale, 0.25, 2, 10, 20),
+            opacity: map(scale, 0.25, 2, 0.8, 0.2),
+            color: [40, 1, 0.5]
           }, worldC);
         }
-
-      }, [worldA, worldB, worldC], Modernizr);
+      });
+      /**
+       * Start the animation loop.
+       */
+      BitShadowMachine.System.loop();
     </script>
   </body>
 </html>
 ```
 
-You should see three Bit-Shadow worlds each with their own set of animated items. View it at [public/simple-world-multiple.html](http://foldi.github.io/Bit-Shadow-Machine/simple-world-multiple.html).
+You should see three Bit-Shadow worlds each with their own set of animated items. View it at [public/Bit.MultipleWorlds.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.MultipleWorlds.html).
 
 Building this project
 ======

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+  <script src="scripts/BitShadowMachine.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <div id='worldB'></div>
+    <div id='worldC'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var viewportSize = BitShadowMachine.Utils.getWindowSize(),
+          rand = BitShadowMachine.Utils.getRandomNumber,
+          map = BitShadowMachine.Utils.map;
+
+      function Box(opt_options) {
+        console.log(arguments);
+        var options = opt_options || {};
+        options.name = 'Box';
+        BitShadowMachine.Item.call(this, options);
+      }
+      BitShadowMachine.Utils.extend(Box, BitShadowMachine.Item);
+
+      // An init() method is required.
+      Box.prototype.init = function(world, options) {
+        console.log(arguments);
+        this.color = options.color || [100, 100, 100];
+        this.location = options.location || new BitShadowMachine.Vector(world.width / 2, world.height / 2);
+      };
+
+      /**
+       * Tell BitShadowMachine where to find classes.
+       */
+      BitShadowMachine.Classes = {
+        Box: Box
+      };
+
+      /**
+       * Create a new BitShadowMachine system.
+       */
+      BitShadowMachine.System.setup(function() {
+        var worldA = this.add('World', {
+          width: 320,
+          height: 480,
+          location: new BitShadowMachine.Vector(0, viewportSize.height / 2 - 240),
+          resolution: 4,
+          colorMode: 'hsl',
+          el: document.getElementById('worldA')
+        });
+
+        var worldB = this.add('World', {
+          width: 320,
+          height: 480,
+          resolution: 4,
+          colorMode: 'hsl',
+          el: document.getElementById('worldB')
+        });
+
+        var worldC = this.add('World', {
+          width: 320,
+          height: 480,
+          location: new BitShadowMachine.Vector(viewportSize.width - 320, viewportSize.height / 2 - 240),
+          resolution: 4,
+          colorMode: 'hsl',
+          el: document.getElementById('worldC')
+        });
+
+        var i, scale;
+        for (i = 0; i < 200; i++) {
+          scale = rand(0.25, 2, true);
+          this.add('Box', {
+            location: new BitShadowMachine.Vector(rand(0, worldA.width), rand(0, worldA.height / 1.2)),
+            scale: scale,
+            mass: map(scale, 0.25, 2, 10, 20),
+            opacity: map(scale, 0.25, 2, 0.8, 0.2),
+            color: [0, 1, 0.5]
+          }, worldA);
+        }
+        for (i = 0; i < 200; i++) {
+          scale = rand(0.25, 2, true);
+          this.add('Box', {
+            location: new BitShadowMachine.Vector(rand(0, worldA.width), rand(0, worldA.height / 1.2)),
+            scale: scale,
+            mass: map(scale, 0.25, 2, 10, 20),
+            opacity: map(scale, 0.25, 2, 0.8, 0.2),
+            color: [20, 1, 0.5]
+          }, worldB);
+        }
+        for (i = 0; i < 200; i++) {
+          scale = rand(0.25, 2, true);
+          this.add('Box', {
+            location: new BitShadowMachine.Vector(rand(0, worldA.width), rand(0, worldA.height / 1.2)),
+            scale: scale,
+            mass: map(scale, 0.25, 2, 10, 20),
+            opacity: map(scale, 0.25, 2, 0.8, 0.2),
+            color: [40, 1, 0.5]
+          }, worldC);
+        }
+      });
+      /**
+       * Start the animation loop.
+       */
+      BitShadowMachine.System.loop();
+    </script>
+  </body>
+</html>
