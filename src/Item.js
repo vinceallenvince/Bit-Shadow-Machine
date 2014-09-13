@@ -1,5 +1,4 @@
 /*global document */
-var Item = require('burner').Item;
 var Vector = require('vector2d-lib');
 
 /**
@@ -147,9 +146,6 @@ Item.prototype.step = function() {
     this._checkWorldEdges();
   } else if (this.wrapWorldEdges) {
     this._wrapWorldEdges();
-  }
-  if (this.controlCamera) { // need the corrected velocity which is the difference bw old/new location
-    this._checkCameraEdges(x, y, this.location.x, this.location.y);
   }
   this.acceleration.mult(0);
   this.afterStep.call(this);

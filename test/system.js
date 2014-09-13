@@ -201,7 +201,7 @@ test('checkFramesSaved() should check total recorded frames.', function(t) {
     });
     var item = this.add('Item');
   });
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.saveStartFrame = 2;
   System.saveEndFrame = 6;
@@ -233,7 +233,7 @@ test('System.data should update each frame.', function(t) {
     });
     var item = this.add('Item');
   });
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.loop();
   t.assert(System.data.frame === 0 && typeof System.data.world !== 'undefined' && typeof System.data.items !== 'undefined', 'records frame number, world and items.');
@@ -259,7 +259,7 @@ test('System._checkSaveFrame should check if System.clock is within saveStartFra
     });
     var item = this.add('Item');
   });
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.saveStartFrame = 2;
   System.saveEndFrame = 6;
@@ -288,7 +288,7 @@ test('System._resetData() should reset System.data.', function(t) {
     });
     var item = this.add('Item');
   });
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.saveStartFrame = 0;
   System.saveEndFrame = 10;
@@ -318,7 +318,7 @@ test('System._saveItemProperties() copies properties from an item to a map of pr
     });
     var item = this.add('Item');
   });
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.saveStartFrame = 0;
   System.saveEndFrame = 10;
@@ -527,7 +527,7 @@ test('hsl color mode should save hue, saturation and lightness.', function(t) {
     });
   });
 
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.saveStartFrame = 0;
   System.saveEndFrame = 10;
@@ -561,7 +561,7 @@ test('unknown color mode throws error.', function(t) {
     });
   });
 
-  System.saveDataComplete = function(num, data) { console.log('frame number: ' + num); };
+  System.saveDataComplete = function(num, data) {};
   System.saveData = true;
   System.saveStartFrame = 0;
   System.saveEndFrame = 10;

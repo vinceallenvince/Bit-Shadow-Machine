@@ -2772,21 +2772,16 @@ World.prototype.init = function(world, opt_options) {
   this.pauseStep = !!options.pauseStep;
   this.pauseDraw = !!options.pauseDraw;
   this.el.className = this.name.toLowerCase();
-  this._camera = this._camera || new Vector();
 
   //
 
   this.resolution = options.resolution || 4;
   this.width = options.width / this.resolution || viewportSize.width / this.resolution;
   this.height = options.height / this.resolution || viewportSize.height / this.resolution;
-  this.borderRadius = options.borderRadius || 0;
   this.location = options.location || new Vector(((viewportSize.width - (this.width * this.resolution)) / 2),
       ((viewportSize.height - (this.height * this.resolution)) / 2));
 
   this.color = options.color || [0, 0, 0];
-  //this.hue = options.hue || 0;
-  //this.saturation = typeof options.saturation === 'undefined' ? 1 : options.saturation;
-  //this.lightness = typeof options.lightness === 'undefined' ? 0.5 : options.lightness;
 
   //
 
@@ -2814,21 +2809,11 @@ World.prototype.init = function(world, opt_options) {
 };
 
 /**
- * Adds an item to the world's view.
- * @param {Object} item An instance of item.
- */
-World.prototype.add = function(item) {
-  this.el.appendChild(item);
-};
-
-/**
  * Applies forces to world.
  * @function step
  * @memberof World
  */
-World.prototype.step = function() {
-  this.location.add(this._camera);
-};
+World.prototype.step = function() {};
 
 module.exports = World;
 
