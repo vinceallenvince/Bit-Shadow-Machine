@@ -1996,7 +1996,6 @@ Vector.prototype.dot = function(vector) {
 module.exports = Vector;
 },{}],10:[function(_dereq_,module,exports){
 /*global document */
-var Item = _dereq_('burner').Item;
 var Vector = _dereq_('vector2d-lib');
 
 /**
@@ -2145,9 +2144,6 @@ Item.prototype.step = function() {
   } else if (this.wrapWorldEdges) {
     this._wrapWorldEdges();
   }
-  if (this.controlCamera) { // need the corrected velocity which is the difference bw old/new location
-    this._checkCameraEdges(x, y, this.location.x, this.location.y);
-  }
   this.acceleration.mult(0);
   this.afterStep.call(this);
 };
@@ -2234,7 +2230,7 @@ Item.prototype._wrapWorldEdges = function() {
 
 module.exports = Item;
 
-},{"burner":3,"vector2d-lib":9}],11:[function(_dereq_,module,exports){
+},{"vector2d-lib":9}],11:[function(_dereq_,module,exports){
 var BitShadowMachine = {
   Item: _dereq_('./item'),
   SimplexNoise: _dereq_('quietriot'),
@@ -2724,7 +2720,6 @@ module.exports = System;
 var Item = _dereq_('./item');
 var Utils = _dereq_('drawing-utils-lib');
 var Vector = _dereq_('vector2d-lib');
-var World = _dereq_('burner').World;
 
 /**
  * Creates a new World.
@@ -2817,6 +2812,6 @@ World.prototype.step = function() {};
 
 module.exports = World;
 
-},{"./item":10,"burner":3,"drawing-utils-lib":6,"vector2d-lib":9}]},{},[11])
+},{"./item":10,"drawing-utils-lib":6,"vector2d-lib":9}]},{},[11])
 (11)
 });

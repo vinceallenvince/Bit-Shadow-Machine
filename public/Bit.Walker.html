@@ -4,7 +4,8 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>Bit-Shadow Machine</title>
   <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/bitshadowmachine.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/mover.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/items/walker.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/items/agent.js" type="text/javascript" charset="utf-8"></script>
   </head>
@@ -19,8 +20,8 @@
       BitShadowMachine.System.setup(function() {
 
         var world = this.add('World', {
-          width: 800,
-          height: 600,
+          width: 960,
+          height: 540,
           resolution: 1,
           el: document.getElementById('worldA'),
           color: [0, 0, 0],

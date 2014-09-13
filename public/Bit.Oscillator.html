@@ -4,29 +4,30 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>Bit-Shadow Machine</title>
   <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/bitshadowmachine.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/oscillator.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
+      BitShadowMachine.System.Classes = {
+        Oscillator: Oscillator
+      }
+
       BitShadowMachine.System.setup(function() {
 
         var world = this.add('World', {
-          width: 800,
-          height: 600,
+          width: 960,
+          height: 540,
           resolution: 4,
           el: document.getElementById('worldA'),
-          color: [100, 100, 0],
-          gravity: new BitShadowMachine.Vector(1, 0),
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0),
           c: 0
         });
 
-        this.add('Item', {
-          checkWorldEdges: false,
-          wrapWorldEdges: true,
-          controlCamera: true
-        });
+        this.add('Oscillator');
 
       });
       BitShadowMachine.System.loop();
