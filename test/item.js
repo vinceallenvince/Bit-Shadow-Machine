@@ -285,3 +285,39 @@ test('checkWorldEdges() should calculate a new location.', function(t) {
 
   t.end();
 });
+
+test('wrapWorldEdges() should calculate a new location.', function(t) {
+
+  beforeTest();
+
+  var world;
+
+  System.setup(function() {
+    world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    obj = this.add('Item', {
+      location: new Vector(world.width + 10, 0)
+    });
+  });
+
+  obj.location.x = world.width + obj.scale;
+  obj._wrapWorldEdges();
+  t.equal(obj.location.x, 0, 'wrapWorldEdges should move obj x.location to world left boundary.');
+
+  obj.location.x = -obj.scale;
+  obj._wrapWorldEdges();
+  t.equal(obj.location.x, world.width, 'wrapWorldEdges should move obj x.location to world right boundary.');
+
+  obj.location.y =  world.height + obj.scale;
+  obj._wrapWorldEdges();
+  t.equal(obj.location.y, 0, 'wrapWorldEdges should move obj y.location to world top boundary.');
+
+  obj.location.y = -obj.scale;
+  obj._wrapWorldEdges();
+  t.equal(obj.location.y, world.height, 'wrapWorldEdges should move obj y.location to world bottom boundary.');
+
+  t.end();
+});
