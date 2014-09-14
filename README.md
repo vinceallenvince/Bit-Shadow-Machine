@@ -11,9 +11,7 @@ View a demo at http://www.bitshadowmachine.com
 
 Think of a Bit-Shadow Machine as a rendering engine. You supply the particles to animate. It takes care of drawing them on screen.
 
-To setup a simple Bit-Shadow Machine, reference BitShadowMachine.min.js and Modernizr.min.js from a script tag in the &lt;head&gt; of your document.
-
-Also, reference the bitshadowmachine.css file.
+To setup a simple Bit-Shadow Machine, reference bitshadowmachine.min.js and the bitshadowmachine.css from a script tag in the &lt;head&gt; of your document.
 
 In the body, add a &lt;script&gt; tag and create a new Bit-Shadow system. Pass the system a function that adds items to the system.
 
@@ -177,7 +175,7 @@ Let's make the box move.
 </html>
 ```
 
-The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitationl force on the box. View it at [public/Bit.BoxAnim.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.BoxAnim.html).
+The Bit-Shadow Machine system will execute an item's step() method each iteration of the animation loop. In the example above, we've added some additional properties and use them in the step() method to simulate a gravitational force on the box. View it at [public/Bit.BoxAnim.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.BoxAnim.html).
 
 ## Multiple items
 
@@ -233,11 +231,9 @@ We've added a function as a beforeStep property that gets called from step(). In
 
 Rendering blur is an intensive operation that requires us to decrease the total number of items to maintain 60fps. View it at [public/Bit.BoxAnimItemsBlur.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.BoxAnimItemsBlur.html).
 
-Now step back and remember these animated items are all just CSS box shadows on the document body.
-
 ## A world
 
-A Bit-Shadow world can be any element that has a box shadow. In the example below, we've placed a &lt;div&gt; in the body and passed in as the second argument to the System.init() method.
+A Bit-Shadow world can be any element that has a box shadow. In the example below, we've placed a &lt;div&gt; in the body and passed it as an 'el' property when adding a new World.
 
 ```html
 <!DOCTYPE html>
@@ -296,13 +292,11 @@ A Bit-Shadow world can be any element that has a box shadow. In the example belo
 </html>
 ```
 
-Notice we also get a menu by default. To suppress the menu, pass 'noMenu: true' as an optional property when creating the world.
-
 View it at [public/Bit.World.html](http://foldi.github.io/Bit-Shadow-Machine/Bit.World.html).
 
 ## Multple worlds
 
-Bit-Shadow Machine can support multiple worlds. Just pass them as an array to the second argument of System.init().
+Bit-Shadow Machine can support multiple worlds. Just add them in the setup function.
 
 ```html
 <!DOCTYPE html>
@@ -418,8 +412,12 @@ Bit-Shadow Machine can support multiple worlds. Just pass them as an array to th
 
 You should see three Bit-Shadow worlds each with their own set of animated items. View it at [public/Bit.MultipleWorlds.html](http://vinceallenvince.github.io/Bit-Shadow-Machine/Bit.MultipleWorlds.html).
 
+##Docs
+
+To learn more, please review [the docs](http://vinceallenvince.github.io/bitshadowmachine/doc/).
+
 Building this project
-======
+------
 
 This project uses [Grunt](http://gruntjs.com). To build the project first install the node modules.
 
@@ -433,10 +431,16 @@ Next, run grunt.
 grunt
 ```
 
-To generate docs, run:
+To run the tests, run 'npm test'.
 
 ```
-grunt doc
+npm test
+```
+
+To check test coverage run 'grunt coverage'.
+
+```
+grunt coverage
 ```
 
 A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:
@@ -450,3 +454,5 @@ A post-commit hook is defined in /post-commit that runs the Plato complexity ana
 ```
 ln -s ../../post-commit .git/hooks/post-commit
 ```
+
+View the [code complexity](http://vinceallenvince.github.io/bitshadowmachine/reports/) report.
