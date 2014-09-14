@@ -10,26 +10,25 @@ before_deploy: echo 'ready to deploy?'
 after_deploy:
 - echo 'done!'
 - ./deploy-gh-pages.sh
+deploy:
+- provider: releases
+  api_key:
+    secure: x/zK3R3X/PQ33CsfgniCCCwzXBiegQSdJ36lcZIUN3vHzc3Pk2xQv+g6MPhmb+V7+se5yjG/ogRGMFKxWJKSbE72zMHJhK89ei4B9OY2G5t1Of5pWOmrrMVxWGoJnKylE/lfuU6U/SEgtUhBPj/wpC9DMbegyyfXlEH1SUObVl8=
+  file:
+  - release/bitshadowmachine.min.js
+  - release/bitshadowmachine.min.css
+  on:
+    repo: vinceallenvince/Bit-Shadow-Machine
+    tags: true
+    all_branches: true
+- provider: npm
+  email: vince@vinceallen.com
+  api_key:
+    secure: RaflOAvCnxZg9jGGiE0jX1P2doax7X1KNnICrTO6rBvA1v7KCuZLAlxYOVYyznI0+3q1GEQcVdoHIQJTFCor8jFu8IOPKQGEYaY8bzlxe5RErSTt5Pq0tUY9k+s08Nv16D4/pgyyT38eaPhDWhxIjQ7nCkV0XQ0hgwlz14eKPKQ=
+  on:
+    repo: vinceallenvince/Bit-Shadow-Machine
+    tags: true
+    all_branches: true
 env:
   global:
-  - GH_REF: github.com/vinceallenvince/Bit-Shadow-Machine.git
-  - secure: CipXlQpTaAirKaXn4fSKtVgCHg1NrzGi1vesa9iOzUOaTtQS+tn/BPnbZHt0/2tkHuIaW7XXX+5Y6OsaXI7icjoHBcS+J8GX1A4U3SqcrOQZ6ZKnyWaK8C67DZA1ezhCQEu9XfRPCPVpTtRkna9ctYcbodY3ekUoSujVrqMGU4w=
-deploy:
-  - provider: npm
-    email: vince@vinceallen.com
-    api_key:
-      secure: ZWuwJzknoPOreRHb6lTxzPJdJ32OKwtuxpkhoi0i/JRjBtZTdHOsp0qIi73xB0fbuWtpPNByIshOu58WxtOBX3kxswKDBQC+OFh+h+lK3R0b2DvWybeCiAw+vm0mp+cilvIkJ2/9km71WsO4xnEa85lwhQEIYCncy4InK/zXW8c=
-    on:
-      tags: true
-      repo: vinceallenvince/Bit-Shadow-Machine
-      all_branches: true
-  - provider: releases
-    api_key:
-      secure: o+rKD1Qwd/A7yFAw1zYxta6Y8oXSHYpft67WzIp+44vvW4arMYZ3OyowuLwr5+Jes79Vkk9f5sSQsa+3BrrIwENX3fjTMHWhv4RwkudjCpLXK4Xb+tbaP0DgAlg9eQN4kP8pvPnwYBwopvu1sLZUeAEWOgVYfxFCExADpAuyAdg=
-    file:
-    - release/bitshadowmachine.min.js
-    - release/bitshadowmachine.min.css
-    on:
-      repo: vinceallenvince/Bit-Shadow-Machine
-      tags: true
-      all_branches: true
+    secure: ujnEuZ+yJdm9UYRGDxGrrg0VWVnEjgndmRQxAPCfCNhoKPwfA2VLgA1ehxpncu5k7pgqsxyRBbXehfLMv2og6+OUQKdB32qXde3+ARMAL8tNbsJgPj1yR8DG4x+3C0jybvgiumNyJRHSjk8J76Sl82LmDFVCt4d8/cLv+HPeraM=
