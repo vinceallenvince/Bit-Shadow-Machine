@@ -2585,16 +2585,22 @@ System.add = function(opt_klass, opt_options, opt_world) {
 
 /**
  * Iterates over records.
+ * @param {Function} [opt_function=function(){}] A function.
  * @function loop
  * @memberof System
  */
-System.loop = function() {
+System.loop = function(opt_function) {
 
   var i, record, records = System._records,
       len = System._records.length,
+      frameFunction = opt_function || function() {},
       worlds = System.getAllWorlds(),
       buffers = System.getAllBuffers(),
       shadows = '';
+
+  if (!System.frameFunction) {
+    System.frameFunction = frameFunction;
+  }
 
   // check if we've exceeded totalFrames
   if (System.checkFramesSaved()) {
@@ -2676,6 +2682,7 @@ System.loop = function() {
   if (FPSDisplay.active) { // TODO: test this
     FPSDisplay.update(len);
   }
+  System.frameFunction.call(this);
   if (typeof window.requestAnimationFrame !== 'undefined') {
     window.requestAnimationFrame(System.loop);
   }
@@ -2938,7 +2945,7 @@ World.prototype.init = function(world, opt_options) {
 
   this.el = options.el || document.body;
   this.gravity = options.gravity || new Vector(0, 0.1);
-  this.c = options.c || 0.1;
+  this.c = typeof options.c !== 'undefined' ? options.c : 0.1;
   this.pauseStep = !!options.pauseStep;
   this.pauseDraw = !!options.pauseDraw;
   this.el.className = this.name.toLowerCase();
