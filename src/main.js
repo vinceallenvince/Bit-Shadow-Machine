@@ -1,4 +1,5 @@
 var BitShadowMachine = {
+  Anim: require('./anim'),
   Item: require('./item'),
   SimplexNoise: require('quietriot'),
   System: require('./system'),
@@ -6,5 +7,8 @@ var BitShadowMachine = {
   Utils: require('burner').Utils
 };
 
+BitShadowMachine.System.Classes = {
+  AnimUnit: require('./animunit')
+};
 
 module.exports = BitShadowMachine;

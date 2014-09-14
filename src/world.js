@@ -5,18 +5,11 @@ var Vector = require('vector2d-lib');
 /**
  * Creates a new World.
  *
- * @param {Object} [opt_options=] A map of initial properties.
  * @constructor
  */
-function World(opt_options) {
-
+function World() {
   Item.call(this);
-
-  var options = opt_options || {};
-
-  this.el = options.el || document.body;
   this.name = 'World';
-
   /**
    * Worlds do not have worlds. However, assigning an
    * object literal makes for less conditions in the
@@ -31,10 +24,8 @@ Utils.extend(World, Item);
  * @function init
  * @memberof Item
  *
+ * @param {Object} world A world.
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.width = this.el.scrollWidth] Width.
- * @param {number} [opt_options.height = this.el.scrollHeight] Height.
- *
  */
 World.prototype.init = function(world, opt_options) {
 
@@ -43,6 +34,8 @@ World.prototype.init = function(world, opt_options) {
   var options = opt_options || {},
       viewportSize = Utils.getWindowSize();
 
+
+  this.el = options.el || document.body;
   this.gravity = options.gravity || new Vector(0, 0.1);
   this.c = options.c || 0.1;
   this.pauseStep = !!options.pauseStep;
@@ -81,11 +74,10 @@ World.prototype.init = function(world, opt_options) {
 
     document.body.appendChild(container);
   }
-
 };
 
 /**
- * Applies forces to world.
+ * A noop.
  * @function step
  * @memberof World
  */
