@@ -1995,6 +1995,183 @@ Vector.prototype.dot = function(vector) {
 
 module.exports = Vector;
 },{}],10:[function(_dereq_,module,exports){
+var Item = _dereq_('./item');
+var System = _dereq_('./system');
+var Vector = _dereq_('vector2d-lib');
+var Utils = _dereq_('drawing-utils-lib');
+
+/**
+ * Creates a new Anim. Use for frame-based animation in a
+ * Bit-Shadow Machine rendering.
+ *
+ * An Anim is a simple hidden point with a 'frames' property
+ * that describes additional Bit-Shadows to position relative
+ * to the Anim's location. An Anim also has an advanceFrame
+ * method that cycles through all entries in the frames property.
+ *
+ * @constructor
+ */
+function Anim() {
+  Item.call(this);
+}
+Utils.extend(Anim, Item);
+
+/**
+ * Initializes the Anim.
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.scale = 0] Scale. Set to a higher value for debugging.
+ * @param {Array} [opt_options.color = [0, 0, 0]] Color. Set color for debugging if scale > 0.
+ * @param {number} [opt_options.zIndex = 0] zIndex. Set to a higher value to place this pixel on a higher layer.
+ * @param {Object} [opt_options.location = new Vector] Location.
+ * @param {Array} [opt_options.frames = []] The frames to animate.
+ * @param {number} [opt_options.currentFrame = 0] The current animation frame.
+ *
+ * @example The 'frames' property should be formatted like:
+ * var frames = [
+ *   {"items":
+ *     [
+ *       {"x": 9, "y": -30, "color": [255, 255, 255], "opacity": 1, "scale": 1},
+ *       {"x": 17,"y": -30, "color": [255, 255, 255], "opacity": 1, "scale": 1}
+ *     ]
+ *   }
+ * ];
+ */
+Anim.prototype.init = function(world, opt_options) {
+  Anim._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  /*
+   * At scale = 0, the origin point will be hidden. Set scale and
+   * color for help w debugging.
+   */
+  this.scale = options.scale || 0;
+  this.color = options.color || [0, 0, 0];
+  this.location = options.location || new Vector(this.world.width / 2, this.world.height / 2);
+
+  this.frames = options.frames || [];
+  this.currentFrame = typeof options.currentFrame !== 'undefined' ? options.currentFrame : 0;
+  this.loop = typeof options.loop !== 'undefined' ? options.loop : true;
+
+  this.frameDuration = options.frameDuration || 3;
+
+  /**
+   * Anim instances must be stored in System._records.list at a lower index
+   * than their associated AnimUnit instance. If System.zSorted = true,
+   * we sort System._records.list by zIndex. Since Anim instances are
+   * invisible (while their AnimUnits are rendered), we can force a negative
+   * zIndex and keep them at the bottom of System._records.list.
+   */
+  this.zIndex = -options.zIndex || -1;
+
+  /**
+   * The internal frame count that is checked against
+   * frameDuration to see if we should advance the frame.
+   * @private
+   */
+  this._frameCount = this.frameDuration;
+
+};
+
+
+/**
+ * Checks internal frame count agaist frameDuration to see if we
+ * should advance the frame.
+ */
+Anim.prototype.step = function() {
+
+  if (this._frameCount < this.frameDuration) {
+    this._frameCount++;
+  } else {
+    this.advanceFrame();
+    this._frameCount = 0;
+  }
+};
+
+/*
+ * Loops thru all entries in the 'frames' property and
+ * creates instances of AnimUnit.
+ */
+Anim.prototype.advanceFrame = function() {
+
+  var i, max, animUnits, item, frame;
+
+  // create new anim pixels
+  if (this.frames.length) {
+    frame = this.frames[this.currentFrame];
+    for (i = 0, max = frame.items.length; i < max; i++) {
+      item = frame.items[i];
+      System.add('AnimUnit', {
+        location: new Vector(this.location.x + item.x, this.location.y + item.y),
+        color: item.color,
+        scale: 1,
+        opacity: item.opacity,
+        parent: this,
+        zIndex: -this.zIndex // reverse the zIndex value so the intended value is passed to the AnimUnit
+      }, this.world);
+    }
+  }
+
+  if (this.currentFrame + 1 < this.frames.length) {
+    this.currentFrame++;
+  } else if (this.loop) {
+    this.currentFrame = 0;
+  }
+};
+
+module.exports = Anim;
+
+
+},{"./item":12,"./system":14,"drawing-utils-lib":6,"vector2d-lib":9}],11:[function(_dereq_,module,exports){
+var Item = _dereq_('./item');
+var System = _dereq_('./system');
+var Utils = _dereq_('drawing-utils-lib');
+
+/**
+ * Creates a new AnimUnit.
+ *
+ * An AnimUnit occupies a location in an animation frame. Typically,
+ * called from Anim and passed a location, scale and color.
+ * @constructor
+ */
+function AnimUnit() {
+  Item.call(this);
+}
+Utils.extend(AnimUnit, Item);
+
+/**
+ * Initializes the AnimUnit.
+ * @param {Object} world A world.
+ * @param {Object} options Initial options.
+ */
+AnimUnit.prototype.init = function(world, options) {
+  if (!options.parent || !options.location) {
+    throw new Error('AnimUnit.init: parent amd location required.');
+  }
+  AnimUnit._superClass.init.call(this, world, options);
+
+  this.parent = options.parent;
+  this.location = options.location;
+  this.scale = options.scale || 1;
+  this.color = options.color || [100, 100, 100];
+  this.zIndex = options.zIndex || 1; // the default value must be > 0
+  this.currentFrame = 0;
+};
+
+/**
+ * Checks if parent Anim is advancing the frame. If so,
+ * this object destoys itself.
+ * @returns {number} Total system records.
+ */
+AnimUnit.prototype.step = function() {
+  if (this.parent._frameCount >= this.parent.frameDuration) {
+    System.remove(this);
+    return System._records.length;
+  }
+};
+
+module.exports = AnimUnit;
+},{"./item":12,"./system":14,"drawing-utils-lib":6}],12:[function(_dereq_,module,exports){
 /*global document */
 var Vector = _dereq_('vector2d-lib');
 
@@ -2230,8 +2407,9 @@ Item.prototype._wrapWorldEdges = function() {
 
 module.exports = Item;
 
-},{"vector2d-lib":9}],11:[function(_dereq_,module,exports){
+},{"vector2d-lib":9}],13:[function(_dereq_,module,exports){
 var BitShadowMachine = {
+  Anim: _dereq_('./anim'),
   Item: _dereq_('./item'),
   SimplexNoise: _dereq_('quietriot'),
   System: _dereq_('./system'),
@@ -2239,9 +2417,13 @@ var BitShadowMachine = {
   Utils: _dereq_('burner').Utils
 };
 
+BitShadowMachine.System.Classes = {
+  Anim: _dereq_('./anim'),
+  AnimUnit: _dereq_('./animunit')
+};
 
 module.exports = BitShadowMachine;
-},{"./item":10,"./system":12,"burner":3,"quietriot":8}],12:[function(_dereq_,module,exports){
+},{"./anim":10,"./animunit":11,"./item":12,"./system":14,"burner":3,"quietriot":8}],14:[function(_dereq_,module,exports){
 var Item = _dereq_('./item');
 var FPSDisplay = _dereq_('fpsdisplay');
 var System = _dereq_('burner').System;
@@ -2367,7 +2549,7 @@ System.getAllBuffers = function() {
  * @memberof System
  * @param {string} [opt_klass = 'Item'] The name of the class to add.
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {string=} [opt_world = System._records[0]] An instance of World to contain the item.
+ * @param {Object} [opt_world = System._records[0]] An instance of World to contain the item.
  * @returns {Object} An instance of the added item.
  */
 System.add = function(opt_klass, opt_options, opt_world) {
@@ -2716,7 +2898,7 @@ System._resetSystem = function() {
 
 module.exports = System;
 
-},{"./item":10,"./world":13,"burner":3,"fpsdisplay":7,"vector2d-lib":9}],13:[function(_dereq_,module,exports){
+},{"./item":12,"./world":15,"burner":3,"fpsdisplay":7,"vector2d-lib":9}],15:[function(_dereq_,module,exports){
 var Item = _dereq_('./item');
 var Utils = _dereq_('drawing-utils-lib');
 var Vector = _dereq_('vector2d-lib');
@@ -2724,18 +2906,11 @@ var Vector = _dereq_('vector2d-lib');
 /**
  * Creates a new World.
  *
- * @param {Object} [opt_options=] A map of initial properties.
  * @constructor
  */
-function World(opt_options) {
-
+function World() {
   Item.call(this);
-
-  var options = opt_options || {};
-
-  this.el = options.el || document.body;
   this.name = 'World';
-
   /**
    * Worlds do not have worlds. However, assigning an
    * object literal makes for less conditions in the
@@ -2750,10 +2925,8 @@ Utils.extend(World, Item);
  * @function init
  * @memberof Item
  *
+ * @param {Object} world A world.
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.width = this.el.scrollWidth] Width.
- * @param {number} [opt_options.height = this.el.scrollHeight] Height.
- *
  */
 World.prototype.init = function(world, opt_options) {
 
@@ -2762,6 +2935,8 @@ World.prototype.init = function(world, opt_options) {
   var options = opt_options || {},
       viewportSize = Utils.getWindowSize();
 
+
+  this.el = options.el || document.body;
   this.gravity = options.gravity || new Vector(0, 0.1);
   this.c = options.c || 0.1;
   this.pauseStep = !!options.pauseStep;
@@ -2800,11 +2975,10 @@ World.prototype.init = function(world, opt_options) {
 
     document.body.appendChild(container);
   }
-
 };
 
 /**
- * Applies forces to world.
+ * A noop.
  * @function step
  * @memberof World
  */
@@ -2812,6 +2986,6 @@ World.prototype.step = function() {};
 
 module.exports = World;
 
-},{"./item":10,"drawing-utils-lib":6,"vector2d-lib":9}]},{},[11])
-(11)
+},{"./item":12,"drawing-utils-lib":6,"vector2d-lib":9}]},{},[13])
+(13)
 });

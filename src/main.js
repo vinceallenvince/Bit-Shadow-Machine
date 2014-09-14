@@ -8,6 +8,7 @@ var BitShadowMachine = {
 };
 
 BitShadowMachine.System.Classes = {
+  Anim: require('./anim'),
   AnimUnit: require('./animunit')
 };
 
