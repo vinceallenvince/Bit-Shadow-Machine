@@ -6,7 +6,7 @@
   "scripts": {
     "test": "browserify test/*.js | testling"
   },
-  "repository": "",
+  "repository": "https://github.com/vinceallenvince/Bit-Shadow-Machine",
   "author": {
     "name": "Vince Allen",
     "address": "Brooklyn, NY",
