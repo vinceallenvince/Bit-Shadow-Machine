@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+  <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/frames/frameschai.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+        BitShadowMachine.System.init(function() {
+
+          var world = this.add('World', {
+            el: document.getElementById('worldA'),
+            width: 700,
+            height: 450,
+            resolution: 4,
+            colorMode: 'rgb',
+            color: [166, 124, 82],
+            gravity: new BitShadowMachine.Vector(),
+            c: 0
+          });
+
+          var chai = this.add('Anim', {
+            location: new BitShadowMachine.Vector(10, 90),
+            frames: framesChai
+          });
+
+          var container = document.getElementById('container_world');
+          container.style.boxShadow = 'inset 0px 200px 0 0 rgb(198, 156, 109)';
+
+        });
+        BitShadowMachine.System.loop();
+
+    </script>
+
+  </body>
+</html>

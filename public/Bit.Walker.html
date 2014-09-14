@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+  <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/mover.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/walker.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/items/agent.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      BitShadowMachine.System.Classes = {
+        Walker: Walker
+      }
+
+      BitShadowMachine.System.setup(function() {
+
+        var world = this.add('World', {
+          width: 960,
+          height: 540,
+          resolution: 1,
+          el: document.getElementById('worldA'),
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0),
+          c: 0
+        });
+
+        for (var i = 0; i < 600; i++) {
+          var walker = this.add('Walker', {
+            perlin: false,
+            maxSpeed: 1,
+            perlinSpeed: 0.00001,
+            checkWorldEdges: false,
+            wrapWorldEdges: true
+          });
+        }
+
+      });
+      BitShadowMachine.System.loop();
+    </script>
+  </body>
+</html>

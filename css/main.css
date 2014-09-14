@@ -17,8 +17,10 @@ body, .world {
   z-index: 1;
 }
 
+
 /* CAPTION / INPUT MENU */
 .caption, .inputMenu {
+  background-color: rgb(255, 255, 255);
   background-color: rgba(255, 255, 255, 0.1);
   width: 100%;
   position: absolute;
@@ -26,6 +28,7 @@ body, .world {
   padding: 1em 0;
   font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
   font-size: 0.85em;
+  color: rgb(200, 200, 200);
   color: rgba(200, 200, 200, 0.5);
   text-align: center;
   cursor: default;

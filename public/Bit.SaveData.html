@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Bit-Shadow Machine</title>
+  <link href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+  <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var rand = BitShadowMachine.Utils.getRandomNumber;
+      BitShadowMachine.System.saveData = true;
+      BitShadowMachine.System.saveStartFrame = 0;
+      BitShadowMachine.System.saveEndFrame = 30;
+      BitShadowMachine.System.saveDataComplete = function(frameNumber, data) {
+        console.log('frameNumber: %d', frameNumber);
+      };
+      BitShadowMachine.System.setup(function() {
+
+        var world = this.add('World', {
+          width: 360,
+          height: 540,
+          resolution: 4,
+          el: document.getElementById('worldA'),
+          color: [0, 0, 0],
+          gravity: new BitShadowMachine.Vector(0, 0.1),
+          c: 0
+        });
+
+        for (var i = 0; i < 1; i++) {
+          var color = rand(30, 200);
+          var item = this.add('Item', {
+            location: new BitShadowMachine.Vector(rand(0, world.width, true), rand(0, world.height, true)),
+            scale: rand(1, 3, true),
+            color: [color, color, color]
+          });
+        }
+      });
+      BitShadowMachine.System.loop();
+
+    </script>
+  </body>
+</html>
