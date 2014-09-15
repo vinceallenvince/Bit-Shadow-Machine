@@ -1,8 +1,8 @@
 var test = require('tape'),
     Item = require('../src/item'),
     System = require('../src/system'),
-    Utils = require('drawing-utils-lib'),
-    Vector = require('vector2d-lib'),
+    Utils = require('burner').Utils,
+    Vector = require('burner').Vector,
     World, obj;
 
 function beforeTest() {

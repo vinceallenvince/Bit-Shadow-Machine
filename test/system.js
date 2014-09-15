@@ -1,7 +1,7 @@
 var test = require('tape');
 var FPSDisplay = require('fpsdisplay');
 var Item = require('../src/item');
-var Vector = require('vector2d-lib');
+var Vector = require('burner').Vector;
 var System, obj;
 
 function beforeTest() {

@@ -1,7 +1,7 @@
 var Item = require('./item');
 var System = require('./system');
-var Vector = require('vector2d-lib');
-var Utils = require('drawing-utils-lib');
+var Utils = require('burner').Utils;
+var Vector = require('burner').Vector;
 
 /**
  * Creates a new Anim. Use for frame-based animation in a

@@ -1,5 +1,5 @@
 /*global document */
-var Vector = require('vector2d-lib');
+var Vector = require('burner').Vector;
 
 /**
  * Creates a new Item.

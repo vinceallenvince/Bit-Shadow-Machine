@@ -1,6 +1,6 @@
 var Item = require('./item');
 var System = require('./system');
-var Utils = require('drawing-utils-lib');
+var Utils = require('burner').Utils;
 
 /**
  * Creates a new AnimUnit.

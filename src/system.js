@@ -1,7 +1,8 @@
 var Item = require('./item');
 var FPSDisplay = require('fpsdisplay');
 var System = require('burner').System;
-var Vector = require('vector2d-lib');
+var Utils = require('burner').Utils;
+var Vector = require('burner').Vector;
 var World = require('./world');
 
 /**

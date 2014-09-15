@@ -11,6 +11,11 @@
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
+      var rand = function(low, high) {
+        return (Math.random() * high) + low
+      },
+          map = BitShadowMachine.Utils.map;
+
       BitShadowMachine.System.Classes = {
         Oscillator: Oscillator
       }
@@ -27,7 +32,41 @@
           c: 0
         });
 
-        this.add('Oscillator');
+        var moverA = this.add('Mover', {
+          opacity: 0,
+          location: new BitShadowMachine.Vector(world.width / 2, world.height / 2)
+        });
+
+        for (var i = 0; i < 140; i++) {
+          var scale = rand(0, 4);
+          this.add('Oscillator', {
+            blur: 0,
+            parent: moverA,
+            scale: scale,
+            opacity: map(scale, 0, 4, 0.2, 0.05) ,
+            acceleration: new BitShadowMachine.Vector(0.09, 0.05),
+            amplitude: new Vector(60, world.height / 20),
+            aVelocity: new BitShadowMachine.Vector(rand(0, 40), rand(0, 40))
+          });
+        }
+
+        /*var moverB = this.add('Mover', {
+          opacity: 0,
+          location: new BitShadowMachine.Vector(world.width / 2, world.height / 1.7)
+        });
+
+        for (var i = 0; i < 100; i++) {
+          var scale = rand(0, 4);
+          this.add('Oscillator', {
+            blur: 0,
+            parent: moverB,
+            scale: scale,
+            opacity: map(scale, 0, 4, 0.2, 0.05) ,
+            acceleration: new BitShadowMachine.Vector(0.15, 0.05),
+            amplitude: new Vector(world.width / 4.2, world.height / 30),
+            aVelocity: new BitShadowMachine.Vector(rand(0, 40), rand(0, 40))
+          });
+        }*/
 
       });
       BitShadowMachine.System.loop();
