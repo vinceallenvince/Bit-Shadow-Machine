@@ -11,29 +11,29 @@
     <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
-        BitShadowMachine.System.init(function() {
+      var rand = BitShadowMachine.Utils.getRandomNumber;
 
-          var world = this.add('World', {
-            el: document.getElementById('worldA'),
-            width: 700,
-            height: 450,
-            resolution: 4,
-            colorMode: 'rgb',
-            color: [166, 124, 82],
-            gravity: new BitShadowMachine.Vector(),
-            c: 0
-          });
+      BitShadowMachine.System.setup(function() {
 
-          var chai = this.add('Anim', {
-            location: new BitShadowMachine.Vector(10, 90),
-            frames: framesChai
-          });
-
-          var container = document.getElementById('container_world');
-          container.style.boxShadow = 'inset 0px 200px 0 0 rgb(198, 156, 109)';
-
+        var world = this.add('World', {
+          width: 960,
+          height: 540,
+          resolution: 4,
+          el: document.getElementById('worldA'),
+          color: [166, 124, 82],
+          gravity: new BitShadowMachine.Vector(0, 0.1),
+          c: 0
         });
-        BitShadowMachine.System.loop();
+
+        var chai = this.add('Anim', {
+          location: new BitShadowMachine.Vector(10, 90),
+          frames: framesChai
+        });
+
+        var container = document.getElementById('container_world');
+        container.style.boxShadow = 'inset 0px 200px 0 0 rgb(198, 156, 109)';
+      });
+      BitShadowMachine.System.loop();
 
     </script>
 

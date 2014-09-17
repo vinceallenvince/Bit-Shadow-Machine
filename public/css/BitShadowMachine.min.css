@@ -1,4 +1,4 @@
-/*! bitshadowmachine v3.0.1 - 2014-09-15 01:09:03 
+/*! bitshadowmachine v3.0.2 - 2014-09-17 01:09:22 
 Vince Allen |Brooklyn, NY | vince@vinceallen.com | @vinceallenvince | License: MIT */
 
 html{background-color:#1e1e1e}body,.world{position:absolute;top:0;left:0;margin:0;padding:0;overflow:hidden}.worldContainer{position:absolute;overflow:hidden;z-index:1}.caption,.inputMenu{background-color:#fff;background-color:rgba(255,255,255,.1);width:100%;position:absolute;bottom:0;padding:1em 0;font-family:"Franklin Gothic Medium","Franklin Gothic","ITC Franklin Gothic",Arial,sans-serif;font-size:.85em;color:#c8c8c8;color:rgba(200,200,200,.5);text-align:center;cursor:default;-webkit-user-select:none;-moz-user-select:none;-o-user-select:none;-ms-user-select:none;user-select:none}
