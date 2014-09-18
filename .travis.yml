@@ -31,4 +31,5 @@ deploy:
     all_branches: true
 env:
   global:
+  - GH_REF: github.com/vinceallenvince/Bit-Shadow-Machine.git
     secure: ujnEuZ+yJdm9UYRGDxGrrg0VWVnEjgndmRQxAPCfCNhoKPwfA2VLgA1ehxpncu5k7pgqsxyRBbXehfLMv2og6+OUQKdB32qXde3+ARMAL8tNbsJgPj1yR8DG4x+3C0jybvgiumNyJRHSjk8J76Sl82LmDFVCt4d8/cLv+HPeraM=
