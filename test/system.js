@@ -100,6 +100,7 @@ test('check static properties.', function(t) {
   t.equal(typeof System.saveItemProperties, 'object', 'has a saveItemProperties object.');
   t.equal(typeof System.saveWorldProperties, 'object', 'has a saveWorldProperties object.');
   t.equal(typeof System.data, 'object', 'has a data object.');
+  t.equal(typeof System.saveDataTimeoutLength, 'number', 'has a saveDataTimeoutLength property.')
   t.end();
 });
 

@@ -107,6 +107,12 @@ System.saveStartFrame = -1;
 System.saveEndFrame = -1;
 
 /**
+ * Time in milliseconds to wait before calling animation loop.
+ * @type number
+ */
+System.saveDataTimeoutLength = 500;
+
+/**
  * Defines the properties to save in System.data for each item
  * in each frame.
  * @type Object
@@ -384,8 +390,10 @@ System.loop = function(opt_function) {
     FPSDisplay.update(len);
   }
   System.frameFunction.call(this);
-  if (typeof window.requestAnimationFrame !== 'undefined') {
+  if (typeof window.requestAnimationFrame !== 'undefined' && !System._checkSaveFrame()) {
     window.requestAnimationFrame(System.loop);
+  } else {
+    setTimeout(System.loop, System.saveDataTimeoutLength);
   }
 };
 
