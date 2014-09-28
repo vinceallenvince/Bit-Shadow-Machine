@@ -376,7 +376,7 @@ System.loop = function(opt_function) {
   }
 
   // check to call frame complete callback.
-  if (System.saveData) {
+  if (System.saveData && System._checkSaveFrame()) {
     System.saveDataComplete(System.clock, System.data);
   }
   System.clock++;
