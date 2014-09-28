@@ -143,6 +143,7 @@ System.saveWorldProperties = {
   name: true,
   width: true,
   height: true,
+  color: true,
   resolution: true,
   colorMode: true
 };
