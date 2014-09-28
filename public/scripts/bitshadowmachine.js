@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.BitShadowMachine=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.BitShadowMachine=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*jshint supernew:true */
 /** @namespace */
 var Utils = {
@@ -198,7 +198,7 @@ Utils.capitalizeFirstLetter = function(string) {
 };
 
 module.exports = Utils;
-},{}],2:[function(_dereq_,module,exports){
+},{}],2:[function(require,module,exports){
 /*global exports, Vector */
 /*jshint supernew:true */
 
@@ -453,10 +453,10 @@ Vector.prototype.dot = function(vector) {
 };
 
 module.exports = Vector;
-},{}],3:[function(_dereq_,module,exports){
+},{}],3:[function(require,module,exports){
 /*global document */
 
-var Vector = _dereq_('vector2d-lib');
+var Vector = require('vector2d-lib');
 
 /**
  * Creates a new Item.
@@ -799,24 +799,24 @@ Item.prototype.getCSSText = function(props) {
 
 module.exports = Item;
 
-},{"vector2d-lib":2}],4:[function(_dereq_,module,exports){
+},{"vector2d-lib":2}],4:[function(require,module,exports){
 module.exports = {
-  Item: _dereq_('./item'),
-  System: _dereq_('./system'),
-  Utils: _dereq_('drawing-utils-lib'),
-  Vector: _dereq_('vector2d-lib'),
-  World: _dereq_('./world')
+  Item: require('./item'),
+  System: require('./system'),
+  Utils: require('drawing-utils-lib'),
+  Vector: require('vector2d-lib'),
+  World: require('./world')
 };
 
-},{"./item":3,"./system":5,"./world":6,"drawing-utils-lib":1,"vector2d-lib":2}],5:[function(_dereq_,module,exports){
+},{"./item":3,"./system":5,"./world":6,"drawing-utils-lib":1,"vector2d-lib":2}],5:[function(require,module,exports){
 /*global window, document */
 /*jshint supernew:true */
 
-var Item = _dereq_('./item'),
-    World = _dereq_('./world'),
-    Vector = _dereq_('vector2d-lib'),
-    Utils = _dereq_('drawing-utils-lib'),
-    FPSDisplay = _dereq_('fpsdisplay');
+var Item = require('./item'),
+    World = require('./world'),
+    Vector = require('vector2d-lib'),
+    Utils = require('drawing-utils-lib'),
+    FPSDisplay = require('fpsdisplay');
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                               window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -1306,10 +1306,10 @@ System._toggleFPS = function() {
 
 module.exports = System;
 
-},{"./item":3,"./world":6,"drawing-utils-lib":1,"fpsdisplay":7,"vector2d-lib":2}],6:[function(_dereq_,module,exports){
-var Vector = _dereq_('vector2d-lib'),
-    Item = _dereq_('./item'),
-    Utils = _dereq_('drawing-utils-lib');
+},{"./item":3,"./world":6,"drawing-utils-lib":1,"fpsdisplay":7,"vector2d-lib":2}],6:[function(require,module,exports){
+var Vector = require('vector2d-lib'),
+    Item = require('./item'),
+    Utils = require('drawing-utils-lib');
 
 /**
  * Creates a new World.
@@ -1422,7 +1422,7 @@ World.prototype.getCSSText = function(props) {
 
 module.exports = World;
 
-},{"./item":3,"drawing-utils-lib":1,"vector2d-lib":2}],7:[function(_dereq_,module,exports){
+},{"./item":3,"drawing-utils-lib":1,"vector2d-lib":2}],7:[function(require,module,exports){
 /*global document, window */
 
 /**
@@ -1613,7 +1613,7 @@ FPSDisplay.show = function() {
 
 module.exports = FPSDisplay;
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],8:[function(require,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -1744,11 +1744,11 @@ SimplexNoise.dot = function(g, x, y) {
 
 module.exports = SimplexNoise;
 
-},{}],9:[function(_dereq_,module,exports){
-var Item = _dereq_('./item');
-var System = _dereq_('./system');
-var Utils = _dereq_('burner').Utils;
-var Vector = _dereq_('burner').Vector;
+},{}],9:[function(require,module,exports){
+var Item = require('./item');
+var System = require('./system');
+var Utils = require('burner').Utils;
+var Vector = require('burner').Vector;
 
 /**
  * Creates a new Anim. Use for frame-based animation in a
@@ -1872,10 +1872,10 @@ Anim.prototype.advanceFrame = function() {
 module.exports = Anim;
 
 
-},{"./item":11,"./system":13,"burner":4}],10:[function(_dereq_,module,exports){
-var Item = _dereq_('./item');
-var System = _dereq_('./system');
-var Utils = _dereq_('burner').Utils;
+},{"./item":11,"./system":13,"burner":4}],10:[function(require,module,exports){
+var Item = require('./item');
+var System = require('./system');
+var Utils = require('burner').Utils;
 
 /**
  * Creates a new AnimUnit.
@@ -1921,9 +1921,9 @@ AnimUnit.prototype.step = function() {
 };
 
 module.exports = AnimUnit;
-},{"./item":11,"./system":13,"burner":4}],11:[function(_dereq_,module,exports){
+},{"./item":11,"./system":13,"burner":4}],11:[function(require,module,exports){
 /*global document */
-var Vector = _dereq_('burner').Vector;
+var Vector = require('burner').Vector;
 
 /**
  * Creates a new Item.
@@ -2157,31 +2157,31 @@ Item.prototype._wrapWorldEdges = function() {
 
 module.exports = Item;
 
-},{"burner":4}],12:[function(_dereq_,module,exports){
+},{"burner":4}],12:[function(require,module,exports){
 var BitShadowMachine = {
-  Anim: _dereq_('./anim'),
-  Item: _dereq_('./item'),
-  SimplexNoise: _dereq_('quietriot'),
-  System: _dereq_('./system'),
-  Vector: _dereq_('burner').Vector,
-  Utils: _dereq_('burner').Utils
+  Anim: require('./anim'),
+  Item: require('./item'),
+  SimplexNoise: require('quietriot'),
+  System: require('./system'),
+  Vector: require('burner').Vector,
+  Utils: require('burner').Utils
 };
 
 BitShadowMachine.System.Classes = {
-  Anim: _dereq_('./anim'),
-  AnimUnit: _dereq_('./animunit')
+  Anim: require('./anim'),
+  AnimUnit: require('./animunit')
 };
 
 module.exports = BitShadowMachine;
-},{"./anim":9,"./animunit":10,"./item":11,"./system":13,"burner":4,"quietriot":8}],13:[function(_dereq_,module,exports){
+},{"./anim":9,"./animunit":10,"./item":11,"./system":13,"burner":4,"quietriot":8}],13:[function(require,module,exports){
 /*global window, document */
 /*jshint supernew:true */
 
-var Item = _dereq_('./item');
-var FPSDisplay = _dereq_('fpsdisplay');
-var Utils = _dereq_('burner').Utils;
-var Vector = _dereq_('burner').Vector;
-var World = _dereq_('./world');
+var Item = require('./item');
+var FPSDisplay = require('fpsdisplay');
+var Utils = require('burner').Utils;
+var Vector = require('burner').Vector;
+var World = require('./world');
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                               window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -2283,6 +2283,12 @@ System.saveStartFrame = -1;
 System.saveEndFrame = -1;
 
 /**
+ * Time in milliseconds to wait before calling animation loop.
+ * @type number
+ */
+System.saveDataTimeoutLength = 500;
+
+/**
  * Defines the properties to save in System.data for each item
  * in each frame.
  * @type Object
@@ -2313,6 +2319,7 @@ System.saveWorldProperties = {
   name: true,
   width: true,
   height: true,
+  color: true,
   resolution: true,
   colorMode: true
 };
@@ -2552,7 +2559,7 @@ System.loop = function(opt_function) {
   }
 
   // check to call frame complete callback.
-  if (System.saveData) {
+  if (System.saveData && System._checkSaveFrame()) {
     System.saveDataComplete(System.clock, System.data);
   }
   System.clock++;
@@ -2560,8 +2567,10 @@ System.loop = function(opt_function) {
     FPSDisplay.update(len);
   }
   System.frameFunction.call(this);
-  if (typeof window.requestAnimationFrame !== 'undefined') {
+  if (typeof window.requestAnimationFrame !== 'undefined' && !System._checkSaveFrame()) {
     window.requestAnimationFrame(System.loop);
+  } else {
+    setTimeout(System.loop, System.saveDataTimeoutLength);
   }
 };
 
@@ -2895,10 +2904,10 @@ System._resetSystem = function() {
 
 module.exports = System;
 
-},{"./item":11,"./world":14,"burner":4,"fpsdisplay":7}],14:[function(_dereq_,module,exports){
-var Item = _dereq_('./item');
-var Utils = _dereq_('burner').Utils;
-var Vector = _dereq_('burner').Vector;
+},{"./item":11,"./world":14,"burner":4,"fpsdisplay":7}],14:[function(require,module,exports){
+var Item = require('./item');
+var Utils = require('burner').Utils;
+var Vector = require('burner').Vector;
 
 /**
  * Creates a new World.
@@ -2983,6 +2992,5 @@ World.prototype.step = function() {};
 
 module.exports = World;
 
-},{"./item":11,"burner":4}]},{},[12])
-(12)
+},{"./item":11,"burner":4}]},{},[12])(12)
 });
