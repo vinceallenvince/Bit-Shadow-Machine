@@ -264,12 +264,14 @@ test('checkWorldEdges() should calculate a new location.', function(t) {
       height: 300
     });
     obj = this.add('Item', {
-      location: new Vector(world.width + 10, 0)
+      location: new Vector(world.width + 10, 0),
+      velocity: new Vector(2, 3)
     });
   });
 
   obj._checkWorldEdges();
   t.equal(obj.location.x, world.width, 'checkWorldEdges should restrict obj x.location to world right boundary.');
+  t.equal(obj.velocity.x, 2 * -obj.bounciness, 'checkWorldEdges should invert x velocity.');
 
   obj.location.x = -100;
   obj._checkWorldEdges();
@@ -278,6 +280,7 @@ test('checkWorldEdges() should calculate a new location.', function(t) {
   obj.location.y = -100;
   obj._checkWorldEdges();
   t.equal(obj.location.y, 0, 'checkWorldEdges should restrict obj y.location to world top boundary.');
+  t.equal(obj.velocity.y, 3 * -obj.bounciness, 'checkWorldEdges should invert y velocity.');
 
   obj.location.y = world.height + 100;
   obj._checkWorldEdges();

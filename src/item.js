@@ -178,25 +178,25 @@ Item.prototype.applyForce = function(force) {
 Item.prototype._checkWorldEdges = function() {
 
   if (this.location.y < 0) { // top
-    this.velocity.mult(-this.bounciness);
+    this.velocity.y *= -this.bounciness;
     this.location.y = 0;
     return;
   }
 
   if (this.location.x > this.world.width) { // right
-    this.velocity.mult(-this.bounciness);
+    this.velocity.x *= -this.bounciness;
     this.location.x = this.world.width;
     return;
   }
 
   if (this.location.y > this.world.height) { // bottom
-    this.velocity.mult(-this.bounciness);
+    this.velocity.y *= -this.bounciness;
     this.location.y = this.world.height;
     return;
   }
 
   if (this.location.x < 0) { // left
-    this.velocity.mult(-this.bounciness);
+    this.velocity.x *= -this.bounciness;
     this.location.x = 0;
     return;
   }
