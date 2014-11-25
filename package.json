@@ -1,6 +1,6 @@
 {
   "name": "bitshadowmachine",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Bit-Shadow-Machine renders particles in a web browser using CSS box shadows.",
   "main": "src/main.js",
   "scripts": {
