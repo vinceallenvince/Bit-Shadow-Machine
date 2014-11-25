@@ -2204,8 +2204,10 @@ var Utils = _dereq_('burner').Utils;
 var Vector = _dereq_('burner').Vector;
 var World = _dereq_('./world');
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+if (typeof window !== 'undefined') {
+  window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+}
 
 /** @namespace */
 var System = {

@@ -7,8 +7,10 @@ var Utils = require('burner').Utils;
 var Vector = require('burner').Vector;
 var World = require('./world');
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+if (typeof window !== 'undefined') {
+  window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+}
 
 /** @namespace */
 var System = {
